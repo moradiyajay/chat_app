@@ -5,7 +5,7 @@ import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'sign_up_screen.dart';
+import 'register_screen.dart';
 
 class startScreen extends StatelessWidget {
   static String routename = '/';
@@ -13,34 +13,47 @@ class startScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('images/chat.png'),
-                Text(
-                  'Welcome To Chat App',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  'It\'s free and secure',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black54,
+            Positioned(
+              bottom: size.height * 0.125,
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Chat App',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
                   ),
-                ),
-              ],
+                  Image.asset(
+                    'images/chat.png',
+                    height: size.height * 0.5,
+                  ),
+                  Text(
+                    'Welcome To Chat App',
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    'It\'s free and secure',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
             ),
             Positioned(
               bottom: 20,
-              left: 0,
-              right: 0,
-              child: Padding(
+              child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [

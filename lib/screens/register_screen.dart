@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatelessWidget {
   static String routeName = '/sign-up';
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
