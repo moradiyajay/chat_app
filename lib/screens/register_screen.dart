@@ -1,16 +1,12 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:ui';
+// ignore_for_file: prefer_const_constructors
 
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LogInScreen extends StatelessWidget {
-  static String routeName = '/log-in';
-
+class SignUpScreen extends StatelessWidget {
+  static String routeName = '/sign-up';
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -23,9 +19,10 @@ class LogInScreen extends StatelessWidget {
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Login',
+                  'Register',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: size.height * 0.03),
@@ -34,33 +31,26 @@ class LogInScreen extends StatelessWidget {
                   height: size.height * 0.25,
                 ),
                 RectangleInputField(
+                  hintText: 'Email',
+                  primaryColor: Theme.of(context).colorScheme.onSecondary,
+                  secondaryColor: Colors.white,
                   icon: Icons.person,
-                  hintText: "Email",
-                  primaryColor: Colors.blueGrey.shade900,
-                  secondaryColor: Theme.of(context).colorScheme.secondary,
                 ),
                 RectanglePasswordField(
+                  hintText: 'Password',
+                  primaryColor: Theme.of(context).colorScheme.onSecondary,
+                  secondaryColor: Colors.white,
                   icon: Icons.lock,
-                  hintText: "Password",
-                  primaryColor: Colors.blueGrey.shade900,
-                  secondaryColor: Theme.of(context).colorScheme.secondary,
                 ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  margin: EdgeInsets.symmetric(vertical: 12),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      'Forget Password?',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                RectanglePasswordField(
+                  hintText: 'Confirm Password',
+                  primaryColor: Theme.of(context).colorScheme.onSecondary,
+                  secondaryColor: Colors.white,
+                  icon: Icons.lock,
                 ),
+                SizedBox(height: 25),
                 RectangleButton(
-                  text: "Log In",
+                  text: 'Register',
                   backgroundColor: Theme.of(context).primaryColor,
                   callback: () {},
                 ),
@@ -68,7 +58,7 @@ class LogInScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () {},
                   child: Text(
-                    'Don\'t have an account? Register',
+                    'Alreay have an account? Log In',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondary,
                       fontWeight: FontWeight.w500,
