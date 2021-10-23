@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:chat_app/screens/sign_in_screen.dart';
+import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,54 +40,34 @@ class startScreen extends StatelessWidget {
               bottom: 20,
               left: 0,
               right: 0,
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    margin: EdgeInsets.symmetric(vertical: 6),
-                    width: double.infinity,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: () => Navigator.of(context).push(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    RectangleButton(
+                      text: "Register",
+                      backgroundColor: Theme.of(context).primaryColor,
+                      callback: () => Navigator.of(context).push(
                         PageRouteBuilder(
                           pageBuilder: (ctx, _, __) {
                             return SignUpScreen();
                           },
                         ),
                       ),
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    margin: EdgeInsets.symmetric(vertical: 6),
-                    width: double.infinity,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: () => Navigator.of(context).push(
+                    RectangleButton(
+                      text: "LogIn",
+                      backgroundColor: Colors.blueGrey.shade900,
+                      callback: () => Navigator.of(context).push(
                         PageRouteBuilder(
                           pageBuilder: (ctx, _, __) {
                             return SignInScreen();
                           },
                         ),
                       ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              Colors.blueGrey.shade900)),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
