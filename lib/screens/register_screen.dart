@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:chat_app/components/or_divider.dart';
+import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
@@ -103,7 +104,25 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: size.height * 0.025),
+                SizedBox(height: size.height * 0.01),
+                OrDivider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SocialIcon(
+                      assetName: 'images/facebook.svg',
+                      callback: () {},
+                    ),
+                    SocialIcon(
+                      assetName: 'images/google.svg',
+                      callback: () {},
+                    ),
+                    SocialIcon(
+                      assetName: 'images/twitter.svg',
+                      callback: () {},
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
