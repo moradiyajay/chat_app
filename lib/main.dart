@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:chat_app/screens/sign_in_screen.dart';
+import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/screens/start_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         startScreen.routename: (ctx) => startScreen(),
-        SignInScreen.routeName: (context) => SignInScreen(),
+        LogInScreen.routeName: (context) => LogInScreen(),
         SignUpScreen.routeName: (context) => SignUpScreen(),
       },
     );

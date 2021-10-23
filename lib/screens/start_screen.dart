@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:chat_app/screens/sign_in_screen.dart';
+import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -56,12 +56,12 @@ class startScreen extends StatelessWidget {
                       ),
                     ),
                     RectangleButton(
-                      text: "LogIn",
+                      text: "Log In",
                       backgroundColor: Colors.blueGrey.shade900,
                       callback: () => Navigator.of(context).push(
                         PageRouteBuilder(
                           pageBuilder: (ctx, _, __) {
-                            return SignInScreen();
+                            return LogInScreen();
                           },
                         ),
                       ),
