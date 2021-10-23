@@ -1,17 +1,24 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/material.dart';
+
 import 'package:chat_app/components/or_divider.dart';
 import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:chat_app/firebase/firebase_service.dart';
+import 'package:provider/provider.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   static String routeName = '/sign-up';
 
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   void navigatToLogin(BuildContext context) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
@@ -115,7 +122,9 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     SocialIcon(
                       assetName: 'images/google.svg',
-                      callback: () {},
+                      callback: () async {
+                        await FirebaseService().signInwithGoogle();
+                      },
                     ),
                     SocialIcon(
                       assetName: 'images/twitter.svg',
