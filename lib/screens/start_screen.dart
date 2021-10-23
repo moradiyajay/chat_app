@@ -18,7 +18,6 @@ class startScreen extends StatelessWidget {
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              // mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset('images/chat.png'),
                 Text(
@@ -82,6 +81,9 @@ class startScreen extends StatelessWidget {
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Colors.blueGrey.shade900)),
                     ),
                   ),
                 ],
