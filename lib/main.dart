@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       routes: {
         startScreen.routename: (ctx) => startScreen(),
         LogInScreen.routeName: (context) => LogInScreen(),
-        SignUpScreen.routeName: (context) => SignUpScreen(),
+        RegisterScreen.routeName: (context) => RegisterScreen(),
       },
     );
   }
