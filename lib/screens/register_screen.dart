@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/components/or_divider.dart';
@@ -43,6 +44,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    FirebaseServiceProvider firebaseServiceProvide =
+        Provider.of<FirebaseServiceProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -123,7 +126,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SocialIcon(
                       assetName: 'images/google.svg',
                       callback: () async {
-                        await FirebaseService().signInwithGoogle();
+                        await firebaseServiceProvide
+                            .signInwithGoogle()
+                            .then((value) => Navigator.of(context).pop());
+                        // .then(
+                        //       (value) => Navigator.push(
+                        //         context,
+                        //         PageRouteBuilder(
+                        //           pageBuilder: (ctx, _, __) => HomeScreen(),
+                        //         ),
+                        //       ),
+                        //     );
                       },
                     ),
                     SocialIcon(

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class FirebaseService {
+class FirebaseServiceProvider with ChangeNotifier {
   GoogleSignInAccount? _user;
 
   GoogleSignInAccount get user => _user!;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -24,14 +26,18 @@ class FirebaseService {
         idToken: googleSignInAuthentication.idToken,
       );
       await _auth.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-      throw e;
+      notifyListeners();
+    } on FirebaseAuthException {
+      notifyListeners();
+      rethrow;
     }
   }
 
-  Future<void> signOutFromGoogle() async {
-    await _googleSignIn.signOut();
+  Future<void> signOut() async {
+    if (await _googleSignIn.isSignedIn()) {
+      await _googleSignIn.disconnect();
+    }
     await _auth.signOut();
+    notifyListeners();
   }
 }

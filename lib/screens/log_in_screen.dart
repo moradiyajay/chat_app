@@ -3,19 +3,21 @@
 import 'dart:ui';
 
 import 'package:chat_app/screens/register_screen.dart';
+import 'package:chat_app/screens/start_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class LogInScreen extends StatelessWidget {
   static String routeName = '/log-in';
-  void navigatToRegister(BuildContext context) {
+  void navigatTo(BuildContext context, Widget widget) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (ctx, _, __) {
-          return RegisterScreen();
+          return widget;
         },
         transitionsBuilder:
             (__, Animation<double> animation, ____, Widget child) {
@@ -49,6 +51,7 @@ class LogInScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
+                      // onTap: () => navigatTo(context, StartScreen()),
                       child: Icon(Icons.arrow_back_rounded),
                     ),
                     Container(
@@ -100,7 +103,7 @@ class LogInScreen extends StatelessWidget {
                 ),
                 SizedBox(height: size.height * 0.03),
                 GestureDetector(
-                  onTap: () => navigatToRegister(context),
+                  onTap: () => navigatTo(context, RegisterScreen()),
                   child: Text(
                     'Don\'t have an account? Register',
                     style: TextStyle(

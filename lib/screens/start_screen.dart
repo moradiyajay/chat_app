@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 
 import 'register_screen.dart';
 
-class startScreen extends StatelessWidget {
-  static String routename = '/';
-  const startScreen({Key? key}) : super(key: key);
+class StartScreen extends StatelessWidget {
+  static String routename = '/start';
+  const StartScreen({Key? key}) : super(key: key);
 
   void navigatTo(BuildContext context, Widget widget) {
     Navigator.of(context).push(
