@@ -5,13 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
-  // GoogleSignInAccount? _user;
+  User? _user;
   bool _isLogin = true;
   String _userName = '';
   String _userEmail = '';
   String _userPassword = '';
 
-  // GoogleSignInAccount get user => _user!;
+  User get user => _user!;
 
   String get userName => _userName;
   String get userEmail => _userEmail;
@@ -49,6 +49,7 @@ class FirebaseServiceProvider with ChangeNotifier {
         idToken: googleSignInAuthentication.idToken,
       );
       await _auth.signInWithCredential(credential);
+      _user = _auth.currentUser;
       notifyListeners();
     } on FirebaseAuthException {
       notifyListeners();
@@ -67,8 +68,8 @@ class FirebaseServiceProvider with ChangeNotifier {
             email: _userEmail, password: _userPassword);
         notifyListeners();
       }
+      _user = _auth.currentUser;
     } on FirebaseAuthException catch (error) {
-      // print('error: ${error.code}');
       switch (error.code) {
         case "ERROR_EMAIL_ALREADY_IN_USE":
         case "account-exists-with-different-credential":

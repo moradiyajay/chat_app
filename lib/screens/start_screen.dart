@@ -4,6 +4,7 @@ import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'register_screen.dart';
 
@@ -55,8 +56,8 @@ class StartScreen extends StatelessWidget {
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
                     ),
-                    Image.asset(
-                      'images/chat.png',
+                    SvgPicture.asset(
+                      'images/chat.svg',
                       height: size.height * 0.5,
                     ),
                     Text(

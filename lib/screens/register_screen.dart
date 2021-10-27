@@ -10,7 +10,8 @@ import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
-import 'package:chat_app/firebase/firebase_service.dart';
+import 'package:chat_app/provider/firebase_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -60,7 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Form(
               key: _formKey,
-              // autovalidate: true,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -83,8 +83,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   SizedBox(height: size.height * 0.02),
-                  Image.asset(
-                    'images/login_0.png',
+                  SvgPicture.asset(
+                    'images/login.svg',
                     height: size.height * 0.25,
                   ),
                   RectangleInputField(
@@ -131,7 +131,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           );
                         } else {
-                          Navigator.pop(context);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (ctx, _, __) => ChatRoomScreen(),
+                              ),
+                              (route) => false);
                         }
                       }
                     },
@@ -161,7 +166,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         callback: () async {
                           await firebaseServiceProvide
                               .signInwithGoogle()
-                              .then((value) => Navigator.pop(context));
+                              .then((value) => Navigator.pushAndRemoveUntil(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (ctx, _, __) =>
+                                        ChatRoomScreen(),
+                                  ),
+                                  (route) => false));
                         },
                       ),
                       SocialIcon(

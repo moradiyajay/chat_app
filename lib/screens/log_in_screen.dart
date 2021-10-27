@@ -2,15 +2,16 @@
 
 import 'dart:ui';
 
-import 'package:chat_app/firebase/firebase_service.dart';
+import 'package:chat_app/provider/firebase_service.dart';
+import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:chat_app/screens/register_screen.dart';
-import 'package:chat_app/screens/start_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class LogInScreen extends StatelessWidget {
@@ -74,8 +75,8 @@ class LogInScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: size.height * 0.03),
-                  Image.asset(
-                    'images/login_0.png',
+                  SvgPicture.asset(
+                    'images/login.svg',
                     height: size.height * 0.25,
                   ),
                   RectangleInputField(
@@ -124,7 +125,13 @@ class LogInScreen extends StatelessWidget {
                             ),
                           );
                         } else {
-                          Navigator.pop(context);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (ctx, _, __) => ChatRoomScreen(),
+                            ),
+                            (route) => false,
+                          );
                         }
                       }
                     },
