@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/home_screen.dart';
+import 'package:chat_app/screens/chat_room_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,9 +47,15 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routes: {
-        '/': (ctx) => HomeScreen(),
-        // '/': (ctx) => StartScreen(),
-        StartScreen.routename: (ctx) => StartScreen(),
+        '/': (ctx) => StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapShot) {
+              if (snapShot.hasData) {
+                return ChatRoomScreen();
+              } else {
+                return StartScreen();
+              }
+            }),
         LogInScreen.routeName: (ctx) => LogInScreen(),
         RegisterScreen.routeName: (ctx) => RegisterScreen(),
       },

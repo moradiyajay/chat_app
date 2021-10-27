@@ -2,6 +2,8 @@
 
 import 'dart:ui';
 
+import 'package:chat_app/components/or_divider.dart';
+import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/provider/firebase_service.dart';
 import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:chat_app/screens/register_screen.dart';
@@ -17,6 +19,8 @@ import 'package:provider/provider.dart';
 class LogInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   static String routeName = '/log-in';
+
+  LogInScreen({Key? key}) : super(key: key);
   void navigatTo(BuildContext context, Widget widget) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
@@ -116,23 +120,23 @@ class LogInScreen extends StatelessWidget {
                       bool isValid = _formKey.currentState!.validate();
                       if (isValid) {
                         _formKey.currentState!.save();
-                        String? error =
-                            await firebaseServiceProvider.signInWithEmail();
-                        if (error != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(error),
-                            ),
-                          );
-                        } else {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (ctx, _, __) => ChatRoomScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        }
+                        firebaseServiceProvider.signInWithEmail().then((error) {
+                          if (error != null) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(error),
+                              ),
+                            );
+                          } else {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (ctx, _, __) => ChatRoomScreen(),
+                                ),
+                                (route) => false);
+                          }
+                        });
                       }
                     },
                   ),
@@ -146,6 +150,47 @@ class LogInScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                  ),
+                  SizedBox(height: size.height * 0.01),
+                  OrDivider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SocialIcon(
+                        assetName: 'images/facebook.svg',
+                        callback: () {},
+                      ),
+                      SocialIcon(
+                        assetName: 'images/google.svg',
+                        callback: () {
+                          firebaseServiceProvider.signInwithGoogle().then(
+                            (error) {
+                              if (error != null) {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error),
+                                  ),
+                                );
+                              } else {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (ctx, _, __) =>
+                                        ChatRoomScreen(),
+                                  ),
+                                  (route) => false,
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
+                      SocialIcon(
+                        assetName: 'images/twitter.svg',
+                        callback: () {},
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:chat_app/provider/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'database_service.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
   User? _user;
@@ -69,6 +72,13 @@ class FirebaseServiceProvider with ChangeNotifier {
         notifyListeners();
       }
       _user = _auth.currentUser;
+      await DataBase().addUserToFirebase(_user!.uid, {
+        "displayName": _user!.displayName,
+        "email": _user!.email,
+        "profileURL": _user!.photoURL,
+        "userID": _user!.uid,
+        "username": _user!.email!.replaceAll('@gmail.com', ''),
+      });
     } on FirebaseAuthException catch (error) {
       switch (error.code) {
         case "ERROR_EMAIL_ALREADY_IN_USE":

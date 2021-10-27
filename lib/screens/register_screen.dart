@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:chat_app/screens/chat_room_screen.dart';
-import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/components/or_divider.dart';
@@ -49,9 +48,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    FirebaseServiceProvider firebaseServiceProvide =
+    FirebaseServiceProvider firebaseServiceProvider =
         Provider.of<FirebaseServiceProvider>(context);
-    firebaseServiceProvide.isLogin = false;
+    firebaseServiceProvider.isLogin = false;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -93,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     secondaryColor: Colors.white,
                     icon: Icons.person,
                     onSaved: (value) =>
-                        firebaseServiceProvide.userEmail = value,
+                        firebaseServiceProvider.userEmail = value,
                   ),
                   RectanglePasswordField(
                     hintText: 'Password',
@@ -111,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     icon: Icons.lock,
                     confirmController: _pass,
                     onSaved: (value) =>
-                        firebaseServiceProvide.userPassword = value,
+                        firebaseServiceProvider.userPassword = value,
                   ),
                   SizedBox(height: size.height * 0.025),
                   RectangleButton(
@@ -121,23 +120,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       bool isValide = _formKey.currentState!.validate();
                       if (isValide) {
                         _formKey.currentState!.save();
-                        String? error =
-                            await firebaseServiceProvide.signInWithEmail();
-                        if (error != null) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(error),
-                            ),
-                          );
-                        } else {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (ctx, _, __) => ChatRoomScreen(),
-                              ),
-                              (route) => false);
-                        }
+                        firebaseServiceProvider.signInWithEmail().then(
+                          (error) {
+                            if (error != null) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                ),
+                              );
+                            } else {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (ctx, _, __) =>
+                                        ChatRoomScreen(),
+                                  ),
+                                  (route) => false);
+                            }
+                          },
+                        );
                       }
                     },
                   ),
@@ -151,35 +153,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                  SizedBox(height: size.height * 0.01),
-                  OrDivider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SocialIcon(
-                        assetName: 'images/facebook.svg',
-                        callback: () {},
-                      ),
-                      SocialIcon(
-                        assetName: 'images/google.svg',
-                        callback: () async {
-                          await firebaseServiceProvide
-                              .signInwithGoogle()
-                              .then((value) => Navigator.pushAndRemoveUntil(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (ctx, _, __) =>
-                                        ChatRoomScreen(),
-                                  ),
-                                  (route) => false));
-                        },
-                      ),
-                      SocialIcon(
-                        assetName: 'images/twitter.svg',
-                        callback: () {},
-                      ),
-                    ],
                   ),
                 ],
               ),

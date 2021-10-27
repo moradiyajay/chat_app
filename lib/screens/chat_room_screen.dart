@@ -1,11 +1,55 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:chat_app/components/text_field_container.dart';
+import 'package:chat_app/provider/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
 import 'package:chat_app/screens/start_screen.dart';
+import 'package:chat_app/widgets/rectangle_search_field.dart';
+import 'package:chat_app/widgets/search_list_tile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChatRoomScreen extends StatelessWidget {
+class ChatRoomScreen extends StatefulWidget {
+  @override
+  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+}
+
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  late Stream userStream;
+  bool isSearching = false;
+  TextEditingController searchController = TextEditingController();
+
+  void onSearchBtnClick(String username) async {
+    setState(() {
+      isSearching = true;
+    });
+    userStream = await DataBase().getUserByUserName(username);
+  }
+
+  Widget searchUserList() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: userStream as Stream<QuerySnapshot>,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot ds = snapshot.data!.docs[index];
+                    return SearchListTile(
+                        profileUrl: ds["profileURL"],
+                        name: ds["displayName"],
+                        email: ds["email"],
+                        username: ds["username"]);
+                  },
+                  itemCount: snapshot.data!.docs.length,
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseServiceProvider firebaseServiceProvider =
@@ -29,10 +73,25 @@ class ChatRoomScreen extends StatelessWidget {
               icon: Icon(Icons.exit_to_app))
         ],
       ),
-      body: Column(
-        children: [
-          Text('${firebaseServiceProvider.user}'),
-        ],
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              RectangleSearchField(
+                onSearchBtnClick: onSearchBtnClick,
+                searchController: searchController,
+                onBackBtnClick: () {
+                  setState(() {
+                    isSearching = false;
+                    searchController.clear();
+                  });
+                },
+              ),
+              isSearching ? searchUserList() : Container(),
+            ],
+          ),
+        ),
       ),
     );
   }
