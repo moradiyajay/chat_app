@@ -32,6 +32,13 @@ class DataBase {
         .set(messageInfo);
   }
 
+  Future<QuerySnapshot> getUserInfo(String username) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where("username", isEqualTo: username)
+        .get();
+  }
+
   // No need to use
   Future createChatRoom(
       String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
@@ -48,7 +55,7 @@ class DataBase {
       return FirebaseFirestore.instance
           .collection("chatRooms")
           .doc(chatRoomId)
-          .set(chatRoomInfoMap);
+          .update(chatRoomInfoMap);
     }
   }
 
@@ -62,12 +69,12 @@ class DataBase {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String myUsername = await FirebaseAuth.instance.currentUser!.email!
-        .replaceAll('@gmail.com', '');
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .orderBy("lastMessageSendTs", descending: true)
+    String myUsername =
+        FirebaseAuth.instance.currentUser!.email!.replaceAll('@gmail.com', '');
+    return _firebaseFirestore
+        .collection('chatRooms')
         .where("users", arrayContains: myUsername)
+        .orderBy('lastTs', descending: true)
         .snapshots();
   }
 }

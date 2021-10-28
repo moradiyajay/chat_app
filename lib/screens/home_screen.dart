@@ -4,6 +4,7 @@ import 'package:chat_app/provider/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
 import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:chat_app/screens/start_screen.dart';
+import 'package:chat_app/widgets/chat_room_list_tile.dart';
 import 'package:chat_app/widgets/rectangle_search_field.dart';
 import 'package:chat_app/widgets/search_list_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,12 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   late Stream userStream, chatRoomStream;
+  String myUsername = '';
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
 
@@ -32,15 +36,17 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatRoomScreen(
-            chatWithUsername,
-            FirebaseServiceProvider().user!.email!.replaceAll('@gmail.com', ''),
-            profileUrl),
+          chatWithUsername,
+          myUsername,
+          profileUrl,
+        ),
       ),
     );
   }
 
   initializeRoomStream() async {
     chatRoomStream = await DataBase().getChatRooms();
+    setState(() {});
   }
 
   Widget getChatRoomsList() {
@@ -50,13 +56,14 @@ class _HomeScreenState extends State<HomeScreen> {
         return snapshot.hasData
             ? ListView.builder(
                 shrinkWrap: true,
+                // reverse: true,
                 itemBuilder: (ctx, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return Text(ds['username']);
+                  return ChatRoomListTile(ds['lastMessage'], ds.id, myUsername);
                 },
                 itemCount: snapshot.data!.docs.length,
               )
-            : CircularProgressIndicator();
+            : Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -68,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return snapshot.hasData
             ? ListView.builder(
                 shrinkWrap: true,
+                // reverse: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
                   return SearchListTile(
@@ -90,7 +98,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    myUsername =
+        FirebaseServiceProvider().user!.email!.replaceAll('@gmail.com', '');
     initializeRoomStream();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
   }
 
   @override
@@ -116,27 +132,23 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.exit_to_app))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RectangleSearchField(
-                onSearchBtnClick: onSearchBtnClick,
-                searchController: searchController,
-                onBackBtnClick: () {
-                  setState(() {
-                    isSearching = false;
-                    searchController.clear();
-                  });
-                },
-              ),
-              isSearching
-                  ? searchUserList()
-                  : SizedBox(height: 200, child: getChatRoomsList()),
-            ],
-          ),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RectangleSearchField(
+              onSearchBtnClick: onSearchBtnClick,
+              searchController: searchController,
+              onBackBtnClick: () {
+                setState(() {
+                  isSearching = false;
+                  searchController.clear();
+                });
+              },
+            ),
+            isSearching ? searchUserList() : getChatRoomsList(),
+          ],
         ),
       ),
     );
