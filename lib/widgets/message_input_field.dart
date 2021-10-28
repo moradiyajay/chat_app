@@ -21,6 +21,8 @@ class MessageInputField extends StatelessWidget {
         ),
         child: TextField(
           controller: conroller,
+          textInputAction: TextInputAction.done,
+          onEditingComplete: () => onSendClick(conroller.text),
           decoration: InputDecoration(
             suffixIcon: GestureDetector(
               onTap: () => onSendClick(conroller.text),

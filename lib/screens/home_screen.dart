@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:chat_app/components/text_field_container.dart';
 import 'package:chat_app/provider/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
 import 'package:chat_app/screens/chat_room_screen.dart';
@@ -17,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Stream userStream;
+  late Stream userStream, chatRoomStream;
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
 
@@ -26,6 +25,40 @@ class _HomeScreenState extends State<HomeScreen> {
       isSearching = true;
     });
     userStream = await DataBase().getUserByUserName(username);
+  }
+
+  void listTileClick(String chatWithUsername, String profileUrl) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatRoomScreen(
+            chatWithUsername,
+            FirebaseServiceProvider().user!.email!.replaceAll('@gmail.com', ''),
+            profileUrl),
+      ),
+    );
+  }
+
+  initializeRoomStream() async {
+    chatRoomStream = await DataBase().getChatRooms();
+  }
+
+  Widget getChatRoomsList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatRoomStream as Stream<QuerySnapshot>,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (ctx, index) {
+                  DocumentSnapshot ds = snapshot.data!.docs[index];
+                  return Text(ds['username']);
+                },
+                itemCount: snapshot.data!.docs.length,
+              )
+            : CircularProgressIndicator();
+      },
+    );
   }
 
   Widget searchUserList() {
@@ -38,10 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
                   return SearchListTile(
-                      profileUrl: ds["profileURL"],
-                      name: ds["displayName"],
-                      email: ds["email"],
-                      username: ds["username"]);
+                    profileUrl: ds["profileURL"],
+                    name: ds["displayName"],
+                    email: ds["email"],
+                    username: ds["username"],
+                    onClick: listTileClick,
+                  );
                 },
                 itemCount: snapshot.data!.docs.length,
               )
@@ -50,6 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
               );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeRoomStream();
   }
 
   @override
@@ -79,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               RectangleSearchField(
                 onSearchBtnClick: onSearchBtnClick,
@@ -90,7 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-              isSearching ? searchUserList() : Container(),
+              isSearching
+                  ? searchUserList()
+                  : SizedBox(height: 200, child: getChatRoomsList()),
             ],
           ),
         ),

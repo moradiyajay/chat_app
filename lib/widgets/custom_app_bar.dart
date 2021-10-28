@@ -1,6 +1,5 @@
-import 'package:chat_app/screens/chat_room_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
@@ -24,14 +23,15 @@ class CustomAppBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
-              child: SvgPicture.asset('images/login.svg'),
+              backgroundImage: NetworkImage(profileUrl),
             ),
             const SizedBox(width: 20),
             Text(
               username,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

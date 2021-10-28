@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'dart:async';
 
 import 'package:chat_app/provider/database_service.dart';
@@ -8,13 +10,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'database_service.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
-  User? _user;
   bool _isLogin = true;
   String _userName = '';
   String _userEmail = '';
   String _userPassword = '';
 
-  User get user => _user!;
+  User? get user {
+    return _auth.currentUser;
+  }
 
   String get userName => _userName;
   String get userEmail => _userEmail;
@@ -52,7 +55,16 @@ class FirebaseServiceProvider with ChangeNotifier {
         idToken: googleSignInAuthentication.idToken,
       );
       await _auth.signInWithCredential(credential);
-      _user = _auth.currentUser;
+      _userName = user!.email!.replaceAll('@gmail.com', '');
+      _userEmail = user!.email!;
+
+      await DataBase().addUserToFirebase(user!.uid, {
+        "displayName": user!.displayName,
+        "email": user!.email,
+        "profileURL": user!.photoURL,
+        "userID": user!.uid,
+        "username": user!.email!.replaceAll('@gmail.com', ''),
+      });
       notifyListeners();
     } on FirebaseAuthException {
       notifyListeners();
@@ -64,20 +76,25 @@ class FirebaseServiceProvider with ChangeNotifier {
     try {
       if (_isLogin) {
         await _auth.signInWithEmailAndPassword(
-            email: _userEmail, password: _userPassword);
+          email: _userEmail,
+          password: _userPassword,
+        );
         notifyListeners();
       } else {
         await _auth.createUserWithEmailAndPassword(
-            email: _userEmail, password: _userPassword);
+          email: _userEmail,
+          password: _userPassword,
+        );
         notifyListeners();
       }
-      _user = _auth.currentUser;
-      await DataBase().addUserToFirebase(_user!.uid, {
-        "displayName": _user!.displayName,
-        "email": _user!.email,
-        "profileURL": _user!.photoURL,
-        "userID": _user!.uid,
-        "username": _user!.email!.replaceAll('@gmail.com', ''),
+      userName = user!.email!.replaceAll('@gmail.com', '');
+
+      await DataBase().addUserToFirebase(user!.uid, {
+        "displayName": user!.displayName,
+        "email": user!.email,
+        "profileURL": user!.photoURL,
+        "userID": user!.uid,
+        "username": user!.email!.replaceAll('@gmail.com', ''),
       });
     } on FirebaseAuthException catch (error) {
       switch (error.code) {

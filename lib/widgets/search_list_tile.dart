@@ -6,31 +6,21 @@ class SearchListTile extends StatelessWidget {
   final String name;
   final String username;
   final String email;
+  final Function onClick;
 
-  const SearchListTile(
-      {Key? key,
-      required this.profileUrl,
-      required this.name,
-      required this.username,
-      required this.email})
-      : super(key: key);
+  const SearchListTile({
+    Key? key,
+    required this.profileUrl,
+    required this.name,
+    required this.username,
+    required this.email,
+    required this.onClick,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // var chatRoomId = getChatRoomIdByUsernames(myUserName, username);
-        // Map<String, dynamic> chatRoomInfoMap = {
-        //   "users": [myUserName, username]
-        // };
-        // DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatRoomScreen(username, 'jay2'),
-          ),
-        );
-      },
+      onTap: () => onClick(username, profileUrl),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
@@ -43,7 +33,7 @@ class SearchListTile extends StatelessWidget {
                 width: 40,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [Text(name), Text(email)])
