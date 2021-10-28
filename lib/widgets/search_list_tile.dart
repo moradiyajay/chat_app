@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:flutter/material.dart';
 
 class SearchListTile extends StatelessWidget {
@@ -6,11 +7,13 @@ class SearchListTile extends StatelessWidget {
   final String username;
   final String email;
 
-  SearchListTile(
-      {required this.profileUrl,
+  const SearchListTile(
+      {Key? key,
+      required this.profileUrl,
       required this.name,
       required this.username,
-      required this.email});
+      required this.email})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +24,15 @@ class SearchListTile extends StatelessWidget {
         //   "users": [myUserName, username]
         // };
         // DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => ChatScreen(username, name)));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatRoomScreen(username, 'jay2'),
+          ),
+        );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             ClipRRect(

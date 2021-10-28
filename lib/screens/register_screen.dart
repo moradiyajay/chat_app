@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:chat_app/screens/chat_room_screen.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/components/or_divider.dart';
@@ -133,8 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (ctx, _, __) =>
-                                        ChatRoomScreen(),
+                                    pageBuilder: (ctx, _, __) => HomeScreen(),
                                   ),
                                   (route) => false);
                             }

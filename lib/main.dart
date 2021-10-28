@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/chat_room_screen.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapShot) {
               if (snapShot.hasData) {
-                return ChatRoomScreen();
+                return HomeScreen();
               } else {
                 return StartScreen();
               }

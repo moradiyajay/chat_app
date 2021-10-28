@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:chat_app/components/or_divider.dart';
 import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/chat_room_screen.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:chat_app/screens/register_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
@@ -132,7 +132,7 @@ class LogInScreen extends StatelessWidget {
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 PageRouteBuilder(
-                                  pageBuilder: (ctx, _, __) => ChatRoomScreen(),
+                                  pageBuilder: (ctx, _, __) => HomeScreen(),
                                 ),
                                 (route) => false);
                           }
@@ -176,8 +176,7 @@ class LogInScreen extends StatelessWidget {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (ctx, _, __) =>
-                                        ChatRoomScreen(),
+                                    pageBuilder: (ctx, _, __) => HomeScreen(),
                                   ),
                                   (route) => false,
                                 );
