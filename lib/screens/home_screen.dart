@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return ChatRoomListTile(
                         lastMessage: ds['lastMessage'],
                         chatRoomId: ds.id,
+                        dateTime: (ds['lastTs'] as Timestamp).toDate(),
                         myUsername: myUsername,
                         onClick: listTileClick,
                       );

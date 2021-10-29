@@ -1,16 +1,22 @@
 import 'package:chat_app/provider/database_service.dart';
 import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername;
+  final String lastMessage;
+  final String chatRoomId;
+  final String myUsername;
+  final DateTime dateTime;
   final Function onClick;
   const ChatRoomListTile(
       {required this.lastMessage,
       required this.chatRoomId,
       required this.myUsername,
       required this.onClick,
+      required this.dateTime,
       Key? key})
       : super(key: key);
 
@@ -62,12 +68,28 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 3),
-                Text(widget.lastMessage)
+                Text(
+                  widget.lastMessage,
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54),
+                )
               ],
-            )
+            ),
+            const Spacer(),
+            Text(
+              DateFormat('hh:mm aa').format(widget.dateTime),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
       ),
