@@ -19,7 +19,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Stream userStream, chatRoomStream;
+  late Stream userStream;
+  late Stream chatRoomStream;
   String myUsername = '';
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
@@ -53,16 +54,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<QuerySnapshot>(
       stream: chatRoomStream as Stream<QuerySnapshot>,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
         return snapshot.hasData
-            ? ListView.builder(
-                shrinkWrap: true,
-                // reverse: true,
-                itemBuilder: (ctx, index) {
-                  DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return ChatRoomListTile(ds['lastMessage'], ds.id, myUsername);
-                },
-                itemCount: snapshot.data!.docs.length,
-              )
+            ? snapshot.data!.docs.isEmpty
+                ? Center(child: Text('Start Chating'))
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) {
+                      DocumentSnapshot ds = snapshot.data!.docs[index];
+                      return ChatRoomListTile(
+                        lastMessage: ds['lastMessage'],
+                        chatRoomId: ds.id,
+                        myUsername: myUsername,
+                        onClick: listTileClick,
+                      );
+                    },
+                    itemCount: snapshot.data!.docs.length,
+                  )
             : Center(child: CircularProgressIndicator());
       },
     );
@@ -72,22 +82,27 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<QuerySnapshot>(
       stream: userStream as Stream<QuerySnapshot>,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
         return snapshot.hasData
-            ? ListView.builder(
-                shrinkWrap: true,
-                // reverse: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return SearchListTile(
-                    profileUrl: ds["profileURL"],
-                    name: ds["displayName"],
-                    email: ds["email"],
-                    username: ds["username"],
-                    onClick: listTileClick,
-                  );
-                },
-                itemCount: snapshot.data!.docs.length,
-              )
+            ? snapshot.data!.docs.isEmpty
+                ? Text('No User Found')
+                : ListView.builder(
+                    shrinkWrap: true,
+                    // reverse: true,
+                    itemBuilder: (context, index) {
+                      DocumentSnapshot ds = snapshot.data!.docs[index];
+                      return SearchListTile(
+                        profileUrl: ds["profileURL"],
+                        name: ds["displayName"],
+                        email: ds["email"],
+                        username: ds["username"],
+                        onClick: listTileClick,
+                      );
+                    },
+                    itemCount: snapshot.data!.docs.length,
+                  )
             : Center(
                 child: CircularProgressIndicator(),
               );
@@ -148,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             isSearching ? searchUserList() : getChatRoomsList(),
+            // isSearching ? searchUserList() : getChatRoomsList(),
           ],
         ),
       ),

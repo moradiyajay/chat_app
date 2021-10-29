@@ -5,8 +5,13 @@ import 'package:flutter/material.dart';
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUsername;
-  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
-      {Key? key})
+  final Function onClick;
+  const ChatRoomListTile(
+      {required this.lastMessage,
+      required this.chatRoomId,
+      required this.myUsername,
+      required this.onClick,
+      Key? key})
       : super(key: key);
 
   @override
@@ -14,13 +19,14 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profileUrl = "", name = "", username = "";
+  String profileUrl = "";
+  String name = "";
+  String username = "";
 
   getThisUserInfo() async {
     username =
         widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
     QuerySnapshot querySnapshot = await DataBase().getUserInfo(username);
-
     name = "${querySnapshot.docs[0]["displayName"]}";
     profileUrl = "${querySnapshot.docs[0]["profileURL"]}";
     setState(() {});
@@ -33,15 +39,15 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   }
 
   @override
+  void didUpdateWidget(covariant ChatRoomListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    getThisUserInfo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    ChatRoomScreen(username, widget.myUsername, profileUrl)));
-      },
+      onTap: () => widget.onClick(username, profileUrl),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(

@@ -41,6 +41,8 @@ class CustomAppBar extends StatelessWidget {
         padding: appBarPadding,
         child: IconButton(
           padding: EdgeInsets.zero,
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
           icon: const Icon(
             Icons.arrow_back_rounded,
             color: Colors.white,
