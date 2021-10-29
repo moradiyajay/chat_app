@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:chat_app/screens/home_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:chat_app/components/or_divider.dart';
-import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
@@ -16,12 +15,15 @@ import 'package:provider/provider.dart';
 class RegisterScreen extends StatefulWidget {
   static String routeName = '/sign-up';
 
+  const RegisterScreen({Key? key}) : super(key: key);
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool isRegistering = false;
   final TextEditingController _pass = TextEditingController();
 
   void navigatToLogin(BuildContext context) {
@@ -43,6 +45,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
       ),
     );
+  }
+
+  togleRegistering() {
+    setState(() {
+      isRegistering = !isRegistering;
+    });
+  }
+
+  emailRegister(FirebaseServiceProvider firebaseServiceProvider) async {
+    bool isValide = _formKey.currentState!.validate();
+    if (isValide) {
+      _formKey.currentState!.save();
+      togleRegistering();
+      firebaseServiceProvider.signInWithEmail().then(
+        (error) {
+          togleRegistering();
+          if (error != null) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (ctx, _, __) => HomeScreen(),
+                ),
+                (route) => false);
+          }
+        },
+      ).catchError((error) {
+        togleRegistering();
+        if (error != null) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -113,35 +159,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         firebaseServiceProvider.userPassword = value,
                   ),
                   SizedBox(height: size.height * 0.025),
-                  RectangleButton(
-                    text: 'Register',
-                    backgroundColor: Theme.of(context).primaryColor,
-                    callback: () async {
-                      bool isValide = _formKey.currentState!.validate();
-                      if (isValide) {
-                        _formKey.currentState!.save();
-                        firebaseServiceProvider.signInWithEmail().then(
-                          (error) {
-                            if (error != null) {
-                              ScaffoldMessenger.of(context).clearSnackBars();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(error),
-                                ),
-                              );
-                            } else {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (ctx, _, __) => HomeScreen(),
-                                  ),
-                                  (route) => false);
-                            }
-                          },
-                        );
-                      }
-                    },
-                  ),
+                  isRegistering
+                      ? CircularProgressIndicator()
+                      : RectangleButton(
+                          text: 'Register',
+                          backgroundColor: Theme.of(context).primaryColor,
+                          callback: () =>
+                              emailRegister(firebaseServiceProvider),
+                        ),
                   SizedBox(height: size.height * 0.025),
                   GestureDetector(
                     onTap: () => navigatToLogin(context),

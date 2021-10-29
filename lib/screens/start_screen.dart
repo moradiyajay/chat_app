@@ -83,7 +83,6 @@ class StartScreen extends StatelessWidget {
                 right: 0,
                 child: Column(
                   children: [
-                    Text('lodo'),
                     RectangleButton(
                       text: "Register",
                       backgroundColor: Theme.of(context).primaryColor,
@@ -100,7 +99,6 @@ class StartScreen extends StatelessWidget {
                           context,
                           LogInScreen(),
                         );
-                        print('lodo');
                       },
                     ),
                   ],

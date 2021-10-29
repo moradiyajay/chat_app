@@ -22,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Stream userStream;
   late Stream chatRoomStream;
   String myUsername = '';
+  bool isLogingOut = false;
   bool isSearchOn = false;
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
@@ -57,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: chatRoomStream as Stream<QuerySnapshot>,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     itemCount: snapshot.data!.docs.length,
                   )
-            : Center(child: CircularProgressIndicator());
+            : const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -86,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: userStream as Stream<QuerySnapshot>,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
@@ -106,10 +107,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     itemCount: snapshot.data!.docs.length,
                   )
-            : Center(
+            : const Center(
                 child: CircularProgressIndicator(),
               );
       },
+    );
+  }
+
+  logOut(FirebaseServiceProvider firebaseServiceProvider) async {
+    setState(() {
+      isLogingOut = !isLogingOut;
+    });
+    await firebaseServiceProvider.signOut();
+    setState(() {
+      isLogingOut = !isLogingOut;
+    });
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (ctx, _, __) => StartScreen(),
+      ),
     );
   }
 
@@ -164,21 +181,21 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(Icons.search),
             ),
-            IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              onPressed: () async {
-                await firebaseServiceProvider.signOut();
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (ctx, _, __) => StartScreen(),
+            !isLogingOut
+                ? IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                    onPressed: () => logOut(firebaseServiceProvider),
+                    icon: Icon(Icons.exit_to_app),
+                  )
+                : Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(right: 8),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
                   ),
-                );
-              },
-              icon: Icon(Icons.exit_to_app),
-            ),
           ]
         ],
       ),

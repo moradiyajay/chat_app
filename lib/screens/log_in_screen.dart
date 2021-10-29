@@ -10,17 +10,26 @@ import 'package:chat_app/screens/register_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-class LogInScreen extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+class LogInScreen extends StatefulWidget {
   static String routeName = '/log-in';
 
-  LogInScreen({Key? key}) : super(key: key);
+  const LogInScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LogInScreen> createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends State<LogInScreen> {
+  final _formKey = GlobalKey<FormState>();
+  bool isLogingIn = false;
+
   void navigatTo(BuildContext context, Widget widget) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
@@ -40,6 +49,73 @@ class LogInScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  togleIsLoginIn() {
+    setState(() {
+      isLogingIn = !isLogingIn;
+    });
+  }
+
+  emailLogIn(FirebaseServiceProvider firebaseServiceProvider) async {
+    bool isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      _formKey.currentState!.save();
+      togleIsLoginIn();
+      firebaseServiceProvider.signInWithEmail().then((error) {
+        togleIsLoginIn();
+        if (error != null) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+            ),
+          );
+        } else {
+          Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (ctx, _, __) => HomeScreen(),
+              ),
+              (route) => false);
+        }
+      });
+    }
+  }
+
+  googleLogIn(FirebaseServiceProvider firebaseServiceProvider) {
+    togleIsLoginIn();
+    firebaseServiceProvider.signInwithGoogle().then(
+      (error) {
+        togleIsLoginIn();
+        if (error != null) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+            ),
+          );
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (ctx, _, __) => HomeScreen(),
+            ),
+            (route) => false,
+          );
+        }
+      },
+    ).catchError((error) {
+      togleIsLoginIn();
+      if (error != null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -64,7 +140,6 @@ class LogInScreen extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        // onTap: () => navigatTo(context, StartScreen()),
                         child: Icon(Icons.arrow_back_rounded),
                       ),
                       Container(
@@ -113,33 +188,13 @@ class LogInScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  RectangleButton(
-                    text: "Log In",
-                    backgroundColor: Theme.of(context).primaryColor,
-                    callback: () async {
-                      bool isValid = _formKey.currentState!.validate();
-                      if (isValid) {
-                        _formKey.currentState!.save();
-                        firebaseServiceProvider.signInWithEmail().then((error) {
-                          if (error != null) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(error),
-                              ),
-                            );
-                          } else {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (ctx, _, __) => HomeScreen(),
-                                ),
-                                (route) => false);
-                          }
-                        });
-                      }
-                    },
-                  ),
+                  isLogingIn
+                      ? CircularProgressIndicator()
+                      : RectangleButton(
+                          text: "Log In",
+                          backgroundColor: Theme.of(context).primaryColor,
+                          callback: () => emailLogIn(firebaseServiceProvider),
+                        ),
                   SizedBox(height: size.height * 0.03),
                   GestureDetector(
                     onTap: () => navigatTo(context, RegisterScreen()),
@@ -162,28 +217,7 @@ class LogInScreen extends StatelessWidget {
                       ),
                       SocialIcon(
                         assetName: 'images/google.svg',
-                        callback: () {
-                          firebaseServiceProvider.signInwithGoogle().then(
-                            (error) {
-                              if (error != null) {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(error),
-                                  ),
-                                );
-                              } else {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (ctx, _, __) => HomeScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              }
-                            },
-                          );
-                        },
+                        callback: () => googleLogIn(firebaseServiceProvider),
                       ),
                       SocialIcon(
                         assetName: 'images/twitter.svg',
