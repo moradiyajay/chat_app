@@ -22,10 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late Stream userStream;
   late Stream chatRoomStream;
   String myUsername = '';
+  bool isSearchOn = false;
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
 
   void onSearchBtnClick(String username) async {
+    if (username == myUsername) return;
     setState(() {
       isSearching = true;
     });
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
-                ? Text('No User Found')
+                ? Center(child: Text('No User Found'))
                 : ListView.builder(
                     shrinkWrap: true,
                     // reverse: true,
@@ -132,9 +134,39 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text('Chat App'),
+        titleSpacing: 0,
+        title: isSearchOn
+            ? RectangleSearchField(
+                onSearchBtnClick: onSearchBtnClick,
+                searchController: searchController,
+                onBackBtnClick: () {
+                  setState(() {
+                    isSearching = false;
+                    isSearchOn = !isSearchOn;
+                    searchController.clear();
+                  });
+                },
+              )
+            : Padding(
+                padding: EdgeInsets.only(left: 20),
+                child: Text('Chat App'),
+              ),
         actions: [
-          IconButton(
+          if (!isSearchOn) ...[
+            IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onPressed: () {
+                setState(() {
+                  isSearchOn = !isSearchOn;
+                });
+              },
+              icon: Icon(Icons.search),
+            ),
+            IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              padding: EdgeInsets.zero,
               onPressed: () async {
                 await firebaseServiceProvider.signOut();
                 Navigator.pushReplacement(
@@ -144,28 +176,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-              icon: Icon(Icons.exit_to_app))
+              icon: Icon(Icons.exit_to_app),
+            ),
+          ]
         ],
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RectangleSearchField(
-              onSearchBtnClick: onSearchBtnClick,
-              searchController: searchController,
-              onBackBtnClick: () {
-                setState(() {
-                  isSearching = false;
-                  searchController.clear();
-                });
-              },
-            ),
-            isSearching ? searchUserList() : getChatRoomsList(),
-            // isSearching ? searchUserList() : getChatRoomsList(),
-          ],
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        child: isSearching ? searchUserList() : getChatRoomsList(),
       ),
     );
   }
