@@ -10,7 +10,6 @@ import 'package:chat_app/screens/register_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -38,12 +37,8 @@ class _LogInScreenState extends State<LogInScreen> {
         },
         transitionsBuilder:
             (__, Animation<double> animation, ____, Widget child) {
-          const begin = Offset(1.0, 0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end);
-          final offsetAnimation = animation.drive(tween);
-          return SlideTransition(
-            position: offsetAnimation,
+          return FadeTransition(
+            opacity: animation,
             child: child,
           );
         },
@@ -123,7 +118,7 @@ class _LogInScreenState extends State<LogInScreen> {
     Size size = MediaQuery.of(context).size;
     FirebaseServiceProvider firebaseServiceProvider =
         Provider.of<FirebaseServiceProvider>(context);
-    firebaseServiceProvider.isLogin = true;
+    firebaseServiceProvider.isNewUser = false;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -153,7 +148,7 @@ class _LogInScreenState extends State<LogInScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: size.height * 0.03),
+                  SizedBox(height: size.height * 0.02),
                   SvgPicture.asset(
                     'images/login.svg',
                     height: size.height * 0.25,
@@ -197,7 +192,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                   SizedBox(height: size.height * 0.03),
                   GestureDetector(
-                    onTap: () => navigatTo(context, RegisterScreen()),
+                    onTap: () => navigatTo(context, AuthScreen()),
                     child: Text(
                       'Don\'t have an account? Register',
                       style: TextStyle(
@@ -212,16 +207,8 @@ class _LogInScreenState extends State<LogInScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SocialIcon(
-                        assetName: 'images/facebook.svg',
-                        callback: () {},
-                      ),
-                      SocialIcon(
                         assetName: 'images/google.svg',
                         callback: () => googleLogIn(firebaseServiceProvider),
-                      ),
-                      SocialIcon(
-                        assetName: 'images/twitter.svg',
-                        callback: () {},
                       ),
                     ],
                   ),

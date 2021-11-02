@@ -1,102 +1,111 @@
-// ignore_for_file: prefer_const_constructors
+import 'package:chat_app/components/or_divider.dart';
+import 'package:chat_app/components/social_icon.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:chat_app/screens/home_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-
-import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
 import 'package:chat_app/provider/firebase_service.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
-class RegisterScreen extends StatefulWidget {
-  static String routeName = '/sign-up';
+class AuthScreen extends StatefulWidget {
+  static String routeName = '/auth-screen';
+  final bool newUser;
 
-  const RegisterScreen({Key? key}) : super(key: key);
+  const AuthScreen({Key? key, this.newUser = true}) : super(key: key);
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool isRegistering = false;
+  bool isLoading = false;
+  late bool isNewUser;
   final TextEditingController _pass = TextEditingController();
+  late FirebaseServiceProvider firebaseServiceProvider;
 
-  void navigatToLogin(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (ctx, _, __) {
-          return LogInScreen();
+  void toggleAuth(BuildContext context) {
+    setState(() {
+      isNewUser = !isNewUser;
+      firebaseServiceProvider.isNewUser = isNewUser;
+    });
+  }
+
+  togleLoading() {
+    setState(() => isLoading = !isLoading);
+  }
+
+  emailAuth(FirebaseServiceProvider firebaseServiceProvider) async {
+    bool isValide = _formKey.currentState!.validate();
+    if (isValide) {
+      _formKey.currentState!.save();
+      togleLoading();
+      firebaseServiceProvider.signInWithEmail().then(
+        (error) {
+          togleLoading();
+          error != null ? errorHandler(error) : navigatToHomeScreen();
         },
-        transitionsBuilder:
-            (__, Animation<double> animation, ____, Widget child) {
-          const begin = Offset(1.0, 0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end);
-          final offsetAnimation = animation.drive(tween);
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
+      ).catchError((error) {
+        togleLoading();
+        if (error != null) errorHandler(error);
+      });
+    }
+  }
+
+  googleLogIn(FirebaseServiceProvider firebaseServiceProvider) {
+    togleLoading();
+    firebaseServiceProvider.signInwithGoogle().then(
+      (error) {
+        togleLoading();
+        error != null ? errorHandler(error) : navigatToHomeScreen();
+      },
+    ).catchError((error) {
+      togleLoading();
+      if (error != null) errorHandler(error);
+    });
+  }
+
+  errorHandler(String error) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error),
       ),
     );
   }
 
-  togleRegistering() {
-    setState(() {
-      isRegistering = !isRegistering;
-    });
+  navigatToHomeScreen() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (ctx, _, __) => const HomeScreen(),
+      ),
+      (route) => false,
+    );
   }
 
-  emailRegister(FirebaseServiceProvider firebaseServiceProvider) async {
-    bool isValide = _formKey.currentState!.validate();
-    if (isValide) {
-      _formKey.currentState!.save();
-      togleRegistering();
-      firebaseServiceProvider.signInWithEmail().then(
-        (error) {
-          togleRegistering();
-          if (error != null) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error),
-              ),
-            );
-          } else {
-            Navigator.pushAndRemoveUntil(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (ctx, _, __) => HomeScreen(),
-                ),
-                (route) => false);
-          }
-        },
-      ).catchError((error) {
-        togleRegistering();
-        if (error != null) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error),
-            ),
-          );
-        }
-      });
-    }
+  @override
+  void initState() {
+    isNewUser = widget.newUser;
+    firebaseServiceProvider =
+        Provider.of<FirebaseServiceProvider>(context, listen: false);
+    firebaseServiceProvider.isNewUser = isNewUser;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pass.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    FirebaseServiceProvider firebaseServiceProvider =
-        Provider.of<FirebaseServiceProvider>(context);
-    firebaseServiceProvider.isLogin = false;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -108,21 +117,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Stack(
                     children: [
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: Icon(Icons.arrow_back_rounded),
+                        child: const Icon(Icons.arrow_back_rounded),
                       ),
                       Container(
                         width: size.width,
                         height: 24,
                         alignment: Alignment.center,
                         child: Text(
-                          'Register',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          isNewUser ? 'Register' : 'Login',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -146,38 +154,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     primaryColor: Theme.of(context).colorScheme.onSecondary,
                     secondaryColor: Colors.white,
                     icon: Icons.lock,
-                    textInputAction: TextInputAction.next,
-                    onSaved: (value) {},
+                    textInputAction:
+                        isNewUser ? TextInputAction.next : TextInputAction.done,
+                    onSaved: (value) {
+                      if (!isNewUser) {
+                        firebaseServiceProvider.userPassword = value;
+                      }
+                    },
                   ),
-                  RectanglePasswordField(
-                    hintText: 'Confirm Password',
-                    primaryColor: Theme.of(context).colorScheme.onSecondary,
-                    secondaryColor: Colors.white,
-                    icon: Icons.lock,
-                    confirmController: _pass,
-                    onSaved: (value) =>
-                        firebaseServiceProvider.userPassword = value,
-                  ),
-                  SizedBox(height: size.height * 0.025),
-                  isRegistering
-                      ? CircularProgressIndicator()
+                  isNewUser
+                      ? RectanglePasswordField(
+                          hintText: 'Confirm Password',
+                          primaryColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                          secondaryColor: Colors.white,
+                          icon: Icons.lock,
+                          confirmController: _pass,
+                          onSaved: (value) =>
+                              firebaseServiceProvider.userPassword = value,
+                        )
+                      : Container(
+                          alignment: Alignment.centerRight,
+                          margin: const EdgeInsets.symmetric(vertical: 12),
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: const Text(
+                              'Forget Password?',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                  SizedBox(height: size.height * (isNewUser ? 0.025 : 0)),
+                  isLoading
+                      ? const CircularProgressIndicator()
                       : RectangleButton(
-                          text: 'Register',
+                          text: isNewUser ? 'Register' : 'Log In',
                           backgroundColor: Theme.of(context).primaryColor,
-                          callback: () =>
-                              emailRegister(firebaseServiceProvider),
+                          callback: () => emailAuth(firebaseServiceProvider),
                         ),
                   SizedBox(height: size.height * 0.025),
                   GestureDetector(
-                    onTap: () => navigatToLogin(context),
+                    onTap: () => toggleAuth(context),
                     child: Text(
-                      'Alreay have an account? Log In',
+                      isNewUser
+                          ? 'Alreay have an account? Log In'
+                          : 'Don\'t have an account? Register',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
+                  if (!isNewUser) ...[
+                    SizedBox(height: size.height * 0.01),
+                    OrDivider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Facebook, twitter login
+                        SocialIcon(
+                          assetName: 'images/google.svg',
+                          callback: () => googleLogIn(firebaseServiceProvider),
+                        ),
+                      ],
+                    ),
+                  ]
                 ],
               ),
             ),

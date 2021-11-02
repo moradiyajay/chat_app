@@ -12,21 +12,35 @@ class StartScreen extends StatelessWidget {
   static String routename = '/start';
   const StartScreen({Key? key}) : super(key: key);
 
-  void navigatTo(BuildContext context, Widget widget) {
+  void navigatTo(BuildContext context, bool newUser, Widget parent) {
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (ctx, _, __) {
-          return widget;
+          return AuthScreen(
+            newUser: newUser,
+          );
         },
-        transitionsBuilder:
-            (__, Animation<double> animation, ____, Widget child) {
-          const begin = Offset(1.0, 0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end);
-          final offsetAnimation = animation.drive(tween);
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
+        transitionDuration: Duration(milliseconds: 400),
+        transitionsBuilder: (__, Animation<double> animation,
+            Animation<double> animationReverse, Widget child) {
+          // first exit current page and then enter new page
+          return Stack(
+            children: [
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset.zero,
+                  end: const Offset(-1.0, 0.0),
+                ).animate(animation),
+                child: parent,
+              ),
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              )
+            ],
           );
         },
       ),
@@ -67,12 +81,13 @@ class StartScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      'It\'s free and secure',
+                      'It\'s free and secure \nwith End-To-End encryption',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Colors.black54,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -86,19 +101,13 @@ class StartScreen extends StatelessWidget {
                     RectangleButton(
                       text: "Register",
                       backgroundColor: Theme.of(context).primaryColor,
-                      callback: () => navigatTo(
-                        context,
-                        RegisterScreen(),
-                      ),
+                      callback: () => navigatTo(context, true, this),
                     ),
                     RectangleButton(
                       text: "Log In",
                       backgroundColor: Colors.blueGrey.shade900,
                       callback: () {
-                        navigatTo(
-                          context,
-                          LogInScreen(),
-                        );
+                        navigatTo(context, false, this);
                       },
                     ),
                   ],

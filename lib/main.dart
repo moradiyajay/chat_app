@@ -56,8 +56,8 @@ class MyApp extends StatelessWidget {
                 return StartScreen();
               }
             }),
-        LogInScreen.routeName: (ctx) => LogInScreen(),
-        RegisterScreen.routeName: (ctx) => RegisterScreen(),
+        // LogInScreen.routeName: (ctx) => LogInScreen(),
+        AuthScreen.routeName: (ctx) => AuthScreen(),
       },
     );
   }

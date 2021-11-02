@@ -10,7 +10,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'database_service.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
-  bool _isLogin = true;
+  bool _isNewUser = true;
   String _userName = '';
   String _userEmail = '';
   String _userPassword = '';
@@ -23,8 +23,8 @@ class FirebaseServiceProvider with ChangeNotifier {
   String get userEmail => _userEmail;
   String get userPassword => _userPassword;
 
-  set isLogin(bool isLogin) {
-    _isLogin = isLogin;
+  set isNewUser(bool isNewUser) {
+    _isNewUser = isNewUser;
   }
 
   set userName(String userName) {
@@ -74,17 +74,18 @@ class FirebaseServiceProvider with ChangeNotifier {
 
   Future<String?> signInWithEmail() async {
     try {
-      if (_isLogin) {
-        await _auth.signInWithEmailAndPassword(
+      if (_isNewUser) {
+        await _auth.createUserWithEmailAndPassword(
           email: _userEmail,
           password: _userPassword,
         );
         notifyListeners();
       } else {
-        await _auth.createUserWithEmailAndPassword(
+        await _auth.signInWithEmailAndPassword(
           email: _userEmail,
           password: _userPassword,
         );
+
         notifyListeners();
       }
       userName = user!.email!.replaceAll('@gmail.com', '');
