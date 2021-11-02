@@ -1,5 +1,6 @@
 import 'package:chat_app/components/or_divider.dart';
 import 'package:chat_app/components/social_icon.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,22 +22,26 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends State<AuthScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  bool isLoading = false;
-  late bool isNewUser;
+  bool _isLoading = false;
+  late bool _isNewUser;
   final TextEditingController _pass = TextEditingController();
-  late FirebaseServiceProvider firebaseServiceProvider;
+  late FirebaseServiceProvider _firebaseServiceProvider;
+  late AnimationController _animationController;
+  late Animation<double> _conPassAnimation;
+  late Animation<double> _conPassSizeAnimation;
+  late Animation<Offset> _forPassAnimation;
 
   void toggleAuth(BuildContext context) {
-    setState(() {
-      isNewUser = !isNewUser;
-      firebaseServiceProvider.isNewUser = isNewUser;
-    });
+    _isNewUser
+        ? _animationController.forward()
+        : _animationController.reverse();
   }
 
   togleLoading() {
-    setState(() => isLoading = !isLoading);
+    setState(() => _isLoading = !_isLoading);
   }
 
   emailAuth(FirebaseServiceProvider firebaseServiceProvider) async {
@@ -90,10 +95,49 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   void initState() {
-    isNewUser = widget.newUser;
-    firebaseServiceProvider =
+    _isNewUser = widget.newUser;
+    _firebaseServiceProvider =
         Provider.of<FirebaseServiceProvider>(context, listen: false);
-    firebaseServiceProvider.isNewUser = isNewUser;
+    _firebaseServiceProvider.isNewUser = _isNewUser;
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 750),
+    );
+
+    _conPassAnimation = Tween<double>(begin: 0, end: -500).animate(
+        CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0, 0.5, curve: Curves.easeInOutCubic)));
+
+    _conPassSizeAnimation = Tween<double>(begin: 78, end: 0).animate(
+        CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.5, 0.75, curve: Curves.fastOutSlowIn)));
+
+    _forPassAnimation =
+        Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: _animationController,
+                curve: const Interval(0.5, 0.75, curve: Curves.fastOutSlowIn)));
+
+    _conPassAnimation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _isNewUser = false;
+          _firebaseServiceProvider.isNewUser = _isNewUser;
+        });
+      } else if (status == AnimationStatus.reverse) {
+        setState(() {
+          _isNewUser = true;
+          _firebaseServiceProvider.isNewUser = _isNewUser;
+        });
+      }
+    });
+
+    // For login animation need to be done
+    if (!_isNewUser) _animationController.forward();
+
     super.initState();
   }
 
@@ -129,7 +173,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         height: 24,
                         alignment: Alignment.center,
                         child: Text(
-                          isNewUser ? 'Register' : 'Login',
+                          _isNewUser ? 'Register' : 'Login',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -146,7 +190,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     secondaryColor: Colors.white,
                     icon: Icons.person,
                     onSaved: (value) =>
-                        firebaseServiceProvider.userEmail = value,
+                        _firebaseServiceProvider.userEmail = value,
                   ),
                   RectanglePasswordField(
                     hintText: 'Password',
@@ -154,16 +198,32 @@ class _AuthScreenState extends State<AuthScreen> {
                     primaryColor: Theme.of(context).colorScheme.onSecondary,
                     secondaryColor: Colors.white,
                     icon: Icons.lock,
-                    textInputAction:
-                        isNewUser ? TextInputAction.next : TextInputAction.done,
+                    textInputAction: _isNewUser
+                        ? TextInputAction.next
+                        : TextInputAction.done,
                     onSaved: (value) {
-                      if (!isNewUser) {
-                        firebaseServiceProvider.userPassword = value;
+                      if (!_isNewUser) {
+                        _firebaseServiceProvider.userPassword = value;
                       }
                     },
                   ),
-                  isNewUser
-                      ? RectanglePasswordField(
+                  Stack(
+                    children: [
+                      AnimatedBuilder(
+                        animation: _conPassAnimation,
+                        builder: (_, child) {
+                          return Transform.translate(
+                            offset: Offset(_conPassAnimation.value, 0),
+                            child: Opacity(
+                              opacity: _isNewUser ? 1 : 0,
+                              child: SizedBox(
+                                height: _conPassSizeAnimation.value,
+                                child: child,
+                              ),
+                            ),
+                          );
+                        },
+                        child: RectanglePasswordField(
                           hintText: 'Confirm Password',
                           primaryColor:
                               Theme.of(context).colorScheme.onSecondary,
@@ -171,9 +231,12 @@ class _AuthScreenState extends State<AuthScreen> {
                           icon: Icons.lock,
                           confirmController: _pass,
                           onSaved: (value) =>
-                              firebaseServiceProvider.userPassword = value,
-                        )
-                      : Container(
+                              _firebaseServiceProvider.userPassword = value,
+                        ),
+                      ),
+                      SlideTransition(
+                        position: _forPassAnimation,
+                        child: Container(
                           alignment: Alignment.centerRight,
                           margin: const EdgeInsets.symmetric(vertical: 12),
                           child: GestureDetector(
@@ -187,19 +250,21 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                           ),
                         ),
-                  SizedBox(height: size.height * (isNewUser ? 0.025 : 0)),
-                  isLoading
+                      ),
+                    ],
+                  ),
+                  _isLoading
                       ? const CircularProgressIndicator()
                       : RectangleButton(
-                          text: isNewUser ? 'Register' : 'Log In',
+                          text: _isNewUser ? 'Register' : 'Log In',
                           backgroundColor: Theme.of(context).primaryColor,
-                          callback: () => emailAuth(firebaseServiceProvider),
+                          callback: () => emailAuth(_firebaseServiceProvider),
                         ),
                   SizedBox(height: size.height * 0.025),
                   GestureDetector(
                     onTap: () => toggleAuth(context),
                     child: Text(
-                      isNewUser
+                      _isNewUser
                           ? 'Alreay have an account? Log In'
                           : 'Don\'t have an account? Register',
                       style: TextStyle(
@@ -208,7 +273,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                   ),
-                  if (!isNewUser) ...[
+                  if (!_isNewUser) ...[
                     SizedBox(height: size.height * 0.01),
                     OrDivider(),
                     Row(
@@ -217,7 +282,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         // Facebook, twitter login
                         SocialIcon(
                           assetName: 'images/google.svg',
-                          callback: () => googleLogIn(firebaseServiceProvider),
+                          callback: () => googleLogIn(_firebaseServiceProvider),
                         ),
                       ],
                     ),

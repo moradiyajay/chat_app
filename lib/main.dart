@@ -8,7 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:chat_app/screens/log_in_screen.dart';
 import 'package:chat_app/screens/start_screen.dart';
-import 'screens/register_screen.dart';
+import 'screens/auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

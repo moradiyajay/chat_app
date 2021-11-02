@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'register_screen.dart';
+import 'auth_screen.dart';
 
 class StartScreen extends StatelessWidget {
   static String routename = '/start';
