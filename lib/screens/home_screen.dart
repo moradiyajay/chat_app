@@ -14,6 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -156,121 +157,139 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<FirebaseServiceProvider>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(244, 241, 253, 1),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Column(
-            children: [
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
-                  ),
-                ),
-                title: Text(
-                  'Good Morning', // !
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    'Alex Blender', // !
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RoundIconButton(
-                      icon: Icons.search,
-                      onClick: () {}, //!
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    RoundIconButton(
-                      icon: Icons.add,
-                      onClick: () {}, //!
-                      backgroundColor:
-                          Theme.of(context).colorScheme.onSecondary,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10, bottom: 25),
-                height: 122,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.only(left: 20, right: 10),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return StoryTile(
-                      profileUrl:
-                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413',
-                      name: 'Jay',
-                      isYou: index == 0,
-                    );
-                  },
-                  itemCount: 5,
-                ),
-              ),
-              Expanded(
-                child: Container(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 330,
+              collapsedHeight: 70,
+              toolbarHeight: 60,
+              pinned: true,
+              backgroundColor: Color.fromRGBO(244, 241, 253, 1),
+              elevation: 0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(30),
                     ),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
+                  padding:
+                      EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+                  margin: EdgeInsets.only(top: 0),
+                  child: Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          bottom: 10,
-                        ),
-                        child: Row(
-                          textBaseline: TextBaseline.alphabetic,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: [
-                            Text(
-                              'Chats',
-                              style: TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Text(
-                                'Manage',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45,
-                                ),
-                              ),
-                            ),
-                          ],
+                      Text(
+                        'Chats',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      getChatRoomsList(),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Text(
+                          'Manage',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black45,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              )
-            ],
-          ),
+                titlePadding: EdgeInsets.zero,
+                background: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
+                        ),
+                      ),
+                      title: Text(
+                        'Good Morning', // !
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          'Alexie Blender', // !
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RoundIconButton(
+                            icon: Icons.search,
+                            onClick: () {}, //!
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                          RoundIconButton(
+                            icon: Icons.add,
+                            onClick: () {}, //!
+                            backgroundColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10, bottom: 25),
+                      height: 122,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.only(left: 20, right: 10),
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return StoryTile(
+                            profileUrl: index == 0
+                                ? 'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413'
+                                : 'https://i.pinimg.com/originals/28/c5/54/28c55499f5401efd54ff75339bc63331.jpg',
+                            name: 'Jay',
+                            isYou: index == 0,
+                          );
+                        },
+                        itemCount: 5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: getChatRoomsList(),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
