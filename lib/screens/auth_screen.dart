@@ -32,12 +32,22 @@ class _AuthScreenState extends State<AuthScreen>
   late AnimationController _animationController;
   late Animation<double> _conPassAnimation;
   late Animation<double> _conPassSizeAnimation;
-  late Animation<Offset> _forPassAnimation;
+  late Animation<Offset> _forgetPassAnimation;
 
   void toggleAuth(BuildContext context) {
-    _isNewUser
-        ? _animationController.forward()
-        : _animationController.reverse();
+    if (_isNewUser) {
+      _animationController.forward();
+      setState(() {
+        _isNewUser = false;
+        _firebaseServiceProvider.isNewUser = _isNewUser;
+      });
+    } else {
+      _animationController.reverse();
+      setState(() {
+        _isNewUser = true;
+        _firebaseServiceProvider.isNewUser = _isNewUser;
+      });
+    }
   }
 
   togleLoading() {
@@ -113,27 +123,27 @@ class _AuthScreenState extends State<AuthScreen>
     _conPassSizeAnimation = Tween<double>(begin: 78, end: 0).animate(
         CurvedAnimation(
             parent: _animationController,
-            curve: const Interval(0.5, 0.75, curve: Curves.fastOutSlowIn)));
+            curve: const Interval(0.5, 1, curve: Curves.fastOutSlowIn)));
 
-    _forPassAnimation =
-        Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
-            CurvedAnimation(
-                parent: _animationController,
-                curve: const Interval(0.5, 0.75, curve: Curves.fastOutSlowIn)));
+    _forgetPassAnimation = Tween<Offset>(
+            begin: const Offset(1, 0), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.25, 0.75, curve: Curves.fastOutSlowIn)));
 
-    _conPassAnimation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          _isNewUser = false;
-          _firebaseServiceProvider.isNewUser = _isNewUser;
-        });
-      } else if (status == AnimationStatus.reverse) {
-        setState(() {
-          _isNewUser = true;
-          _firebaseServiceProvider.isNewUser = _isNewUser;
-        });
-      }
-    });
+    // _conPassAnimation.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     setState(() {
+    //       _isNewUser = false;
+    //       _firebaseServiceProvider.isNewUser = _isNewUser;
+    //     });
+    //   } else if (status == AnimationStatus.reverse) {
+    //     setState(() {
+    //       _isNewUser = true;
+    //       _firebaseServiceProvider.isNewUser = _isNewUser;
+    //     });
+    //   }
+    // });
 
     // For login animation need to be done
     if (!_isNewUser) _animationController.forward();
@@ -145,6 +155,7 @@ class _AuthScreenState extends State<AuthScreen>
   void dispose() {
     super.dispose();
     _pass.dispose();
+    _animationController.dispose();
   }
 
   @override
@@ -235,7 +246,7 @@ class _AuthScreenState extends State<AuthScreen>
                         ),
                       ),
                       SlideTransition(
-                        position: _forPassAnimation,
+                        position: _forgetPassAnimation,
                         child: Container(
                           alignment: Alignment.centerRight,
                           margin: const EdgeInsets.symmetric(vertical: 12),

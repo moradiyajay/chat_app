@@ -1,4 +1,6 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'dart:ui';
 
 import 'package:chat_app/provider/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
@@ -7,8 +9,12 @@ import 'package:chat_app/screens/start_screen.dart';
 import 'package:chat_app/widgets/chat_room_list_tile.dart';
 import 'package:chat_app/widgets/rectangle_search_field.dart';
 import 'package:chat_app/widgets/search_list_tile.dart';
+import 'package:chat_app/widgets/story_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -150,58 +156,214 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<FirebaseServiceProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        titleSpacing: 0,
-        title: isSearchOn
-            ? RectangleSearchField(
-                onSearchBtnClick: onSearchBtnClick,
-                searchController: searchController,
-                onBackBtnClick: () {
-                  setState(() {
-                    isSearching = false;
-                    isSearchOn = !isSearchOn;
-                    searchController.clear();
-                  });
-                },
-              )
-            : Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: Text('Chat App'),
-              ),
-        actions: [
-          if (!isSearchOn) ...[
-            IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onPressed: () {
-                setState(() {
-                  isSearchOn = !isSearchOn;
-                });
-              },
-              icon: Icon(Icons.search),
-            ),
-            !isLogingOut
-                ? IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    padding: EdgeInsets.zero,
-                    onPressed: () => logOut(firebaseServiceProvider),
-                    icon: Icon(Icons.exit_to_app),
-                  )
-                : Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.only(right: 8),
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
+      backgroundColor: Color.fromRGBO(244, 241, 253, 1),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Column(
+            children: [
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
+                  ),
+                ),
+                title: Text(
+                  'Good Morning', // !
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    'Alex Blender', // !
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-          ]
-        ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RoundIconButton(
+                      icon: Icons.search,
+                      onClick: () {}, //!
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    RoundIconButton(
+                      icon: Icons.add,
+                      onClick: () {}, //!
+                      backgroundColor:
+                          Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10, bottom: 25),
+                height: 122,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return StoryTile(
+                      profileUrl:
+                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413',
+                      name: 'Jay',
+                      isYou: index == 0,
+                    );
+                  },
+                  itemCount: 5,
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(30),
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          bottom: 10,
+                        ),
+                        child: Row(
+                          textBaseline: TextBaseline.alphabetic,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          children: [
+                            Text(
+                              'Chats',
+                              style: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {},
+                              child: Text(
+                                'Manage',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      getChatRoomsList(),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        child: isSearching ? searchUserList() : getChatRoomsList(),
+    );
+
+    //   return Scaffold(
+    //     appBar: AppBar(
+    //       elevation: 0,
+    //       titleSpacing: 0,
+    //       title: isSearchOn
+    //           ? RectangleSearchField(
+    //               onSearchBtnClick: onSearchBtnClick,
+    //               searchController: searchController,
+    //               onBackBtnClick: () {
+    //                 setState(() {
+    //                   isSearching = false;
+    //                   isSearchOn = !isSearchOn;
+    //                   searchController.clear();
+    //                 });
+    //               },
+    //             )
+    //           : Padding(
+    //               padding: EdgeInsets.only(left: 20),
+    //               child: Text('Chat App'),
+    //             ),
+    //       actions: [
+    //         if (!isSearchOn) ...[
+    //           IconButton(
+    //             splashColor: Colors.transparent,
+    //             highlightColor: Colors.transparent,
+    //             onPressed: () {
+    //               setState(() {
+    //                 isSearchOn = !isSearchOn;
+    //               });
+    //             },
+    //             icon: Icon(Icons.search),
+    //           ),
+    //           !isLogingOut
+    //               ? IconButton(
+    //                   splashColor: Colors.transparent,
+    //                   highlightColor: Colors.transparent,
+    //                   padding: EdgeInsets.zero,
+    //                   onPressed: () => logOut(firebaseServiceProvider),
+    //                   icon: Icon(Icons.exit_to_app),
+    //                 )
+    //               : Container(
+    //                   alignment: Alignment.center,
+    //                   padding: const EdgeInsets.only(right: 8),
+    //                   child: CircularProgressIndicator(
+    //                     color: Colors.white,
+    //                   ),
+    //                 ),
+    //         ]
+    //       ],
+    //     ),
+    //     body: Container(
+    //       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+    //       child: isSearching ? searchUserList() : getChatRoomsList(),
+    //     ),
+    //   );
+  }
+}
+
+class RoundIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onClick;
+  final Color backgroundColor;
+
+  const RoundIconButton({
+    Key? key,
+    required this.icon,
+    required this.onClick,
+    required this.backgroundColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onClick,
+      child: Container(
+        child: Icon(
+          icon,
+          color: Colors.white,
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backgroundColor,
+          border: Border.all(
+            width: 1,
+            color: Theme.of(context).primaryColor.withOpacity(0.35),
+          ),
+        ),
       ),
     );
   }
