@@ -50,7 +50,7 @@ class StoryTile extends StatelessWidget {
             isYou ? 'Add Story' : name,
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              fontSize: 16,
+              fontSize: 15,
               color: Colors.black.withOpacity(0.75),
             ),
           ),

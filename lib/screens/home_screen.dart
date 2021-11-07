@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         'Chats',
                         style: TextStyle(
                           color: Colors.black87,
-                          fontSize: 24,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           'Manage',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Colors.black45,
                           ),
@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Alexie Blender', // !
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -267,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             isYou: index == 0,
                           );
                         },
-                        itemCount: 5,
+                        itemCount: 3,
                       ),
                     ),
                   ],
@@ -293,62 +293,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-
-    //   return Scaffold(
-    //     appBar: AppBar(
-    //       elevation: 0,
-    //       titleSpacing: 0,
-    //       title: isSearchOn
-    //           ? RectangleSearchField(
-    //               onSearchBtnClick: onSearchBtnClick,
-    //               searchController: searchController,
-    //               onBackBtnClick: () {
-    //                 setState(() {
-    //                   isSearching = false;
-    //                   isSearchOn = !isSearchOn;
-    //                   searchController.clear();
-    //                 });
-    //               },
-    //             )
-    //           : Padding(
-    //               padding: EdgeInsets.only(left: 20),
-    //               child: Text('Chat App'),
-    //             ),
-    //       actions: [
-    //         if (!isSearchOn) ...[
-    //           IconButton(
-    //             splashColor: Colors.transparent,
-    //             highlightColor: Colors.transparent,
-    //             onPressed: () {
-    //               setState(() {
-    //                 isSearchOn = !isSearchOn;
-    //               });
-    //             },
-    //             icon: Icon(Icons.search),
-    //           ),
-    //           !isLogingOut
-    //               ? IconButton(
-    //                   splashColor: Colors.transparent,
-    //                   highlightColor: Colors.transparent,
-    //                   padding: EdgeInsets.zero,
-    //                   onPressed: () => logOut(firebaseServiceProvider),
-    //                   icon: Icon(Icons.exit_to_app),
-    //                 )
-    //               : Container(
-    //                   alignment: Alignment.center,
-    //                   padding: const EdgeInsets.only(right: 8),
-    //                   child: CircularProgressIndicator(
-    //                     color: Colors.white,
-    //                   ),
-    //                 ),
-    //         ]
-    //       ],
-    //     ),
-    //     body: Container(
-    //       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-    //       child: isSearching ? searchUserList() : getChatRoomsList(),
-    //     ),
-    //   );
   }
 }
 

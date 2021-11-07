@@ -53,6 +53,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      tileColor: Colors.white,
       leading: CircleAvatar(
         backgroundImage: NetworkImage(profileUrl),
         minRadius: 23,
@@ -66,7 +67,10 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       subtitle: Text(
         widget.lastMessage,
         style: const TextStyle(
-            fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black54),
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: Colors.black54,
+        ),
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -138,13 +138,13 @@ class NavigationBarItem extends StatelessWidget {
         Icon(
           isActive ? activeIcon : icon,
           color: isActive ? activeColor : Colors.grey.shade600,
-          size: isActive ? 30 : 25,
+          size: isActive ? 26 : 25,
         ),
         const SizedBox(width: 10),
         Text(
           label,
           style: TextStyle(
-            fontSize: isActive ? 16 : 14,
+            fontSize: isActive ? 15 : 14,
             color: isActive ? activeColor : Colors.grey.shade600,
           ),
         ),
