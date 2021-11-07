@@ -1,12 +1,10 @@
-// ignore_for_file: unnecessary_getters_setters
-
 import 'dart:async';
 
-import 'package:chat_app/provider/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import './database_service.dart';
 import 'database_service.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
@@ -18,10 +16,6 @@ class FirebaseServiceProvider with ChangeNotifier {
   User? get user {
     return _auth.currentUser;
   }
-
-  String get userName => _userName;
-  String get userEmail => _userEmail;
-  String get userPassword => _userPassword;
 
   set isNewUser(bool isNewUser) {
     _isNewUser = isNewUser;
@@ -61,7 +55,8 @@ class FirebaseServiceProvider with ChangeNotifier {
       await DataBase().addUserToFirebase(user!.uid, {
         "displayName": user!.displayName,
         "email": user!.email,
-        "profileURL": user!.photoURL,
+        "profileURL": user!.photoURL ??
+            'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
         "username": user!.email!.replaceAll('@gmail.com', ''),
       });

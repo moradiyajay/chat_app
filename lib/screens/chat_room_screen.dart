@@ -1,19 +1,20 @@
-import 'package:chat_app/provider/database_service.dart';
-import 'package:chat_app/widgets/custom_app_bar.dart';
-import 'package:chat_app/widgets/recive_message.dart';
-import 'package:chat_app/widgets/send_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:chat_app/components/media_icon.dart';
-import 'package:intl/intl.dart';
+import '../provider/database_service.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/recive_message.dart';
+import '../widgets/send_message.dart';
+import '../components/media_icon.dart';
 import '../widgets/message_input_field.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   final String chatWithUsername, myUsername, profileUrl;
 
-  const ChatRoomScreen(this.chatWithUsername, this.myUsername, this.profileUrl);
+  const ChatRoomScreen(this.chatWithUsername, this.myUsername, this.profileUrl,
+      {Key? key})
+      : super(key: key);
 
   @override
   _ChatRoomScreenState createState() => _ChatRoomScreenState();
@@ -24,7 +25,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   late Stream messageStream;
   TextEditingController controller = TextEditingController();
 
-  getChatRoomIdByUsernames(String a, String b) {
+  String getChatRoomIdByUsernames(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       return "$b\_$a";
     } else {
@@ -41,7 +42,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     getPreviousMessages();
   }
 
-  checkAndCreateChatRoom() async {
+  void checkAndCreateChatRoom() async {
     await DataBase().createChatRoom(chatRoomId, {
       'lastMessage': '',
       'lastTs': DateTime.now(),

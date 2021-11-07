@@ -1,4 +1,3 @@
-import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:flutter/material.dart';
 
 class SearchListTile extends StatelessWidget {

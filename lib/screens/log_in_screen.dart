@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:chat_app/components/or_divider.dart';
 import 'package:chat_app/components/social_icon.dart';
 import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/home_screen.dart';
+import 'package:chat_app/screens/chats_screen.dart';
 import 'package:chat_app/screens/auth_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
@@ -70,7 +70,7 @@ class _LogInScreenState extends State<LogInScreen> {
           Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
-                pageBuilder: (ctx, _, __) => HomeScreen(),
+                pageBuilder: (ctx, _, __) => ChatsScreen(),
               ),
               (route) => false);
         }
@@ -94,7 +94,7 @@ class _LogInScreenState extends State<LogInScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             PageRouteBuilder(
-              pageBuilder: (ctx, _, __) => HomeScreen(),
+              pageBuilder: (ctx, _, __) => ChatsScreen(),
             ),
             (route) => false,
           );

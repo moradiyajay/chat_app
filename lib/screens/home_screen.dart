@@ -1,24 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:ui';
-
-import 'package:chat_app/provider/database_service.dart';
-import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/chat_room_screen.dart';
-import 'package:chat_app/screens/start_screen.dart';
-import 'package:chat_app/widgets/chat_room_list_tile.dart';
-import 'package:chat_app/widgets/rectangle_search_field.dart';
-import 'package:chat_app/widgets/search_list_tile.dart';
-import 'package:chat_app/widgets/story_tile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
+
+import './chats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  static String routeName = '/home';
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -26,268 +11,67 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Stream userStream;
-  late Stream chatRoomStream;
-  String myUsername = '';
-  bool isLogingOut = false;
-  bool isSearchOn = false;
-  bool isSearching = false;
-  TextEditingController searchController = TextEditingController();
+  int _currentIndex = 1;
 
-  void onSearchBtnClick(String username) async {
-    if (username == myUsername) return;
-    setState(() {
-      isSearching = true;
-    });
-    userStream = await DataBase().getUserByUserName(username);
-  }
-
-  void listTileClick(String chatWithUsername, String profileUrl) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatRoomScreen(
-          chatWithUsername,
-          myUsername,
-          profileUrl,
-        ),
-      ),
-    );
-  }
-
-  initializeRoomStream() async {
-    chatRoomStream = await DataBase().getChatRooms();
-    setState(() {});
-  }
-
-  Widget getChatRoomsList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: chatRoomStream as Stream<QuerySnapshot>,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return snapshot.hasData
-            ? snapshot.data!.docs.isEmpty
-                ? Center(child: Text('Start Chating'))
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemBuilder: (ctx, index) {
-                      DocumentSnapshot ds = snapshot.data!.docs[index];
-                      return ChatRoomListTile(
-                        lastMessage: ds['lastMessage'],
-                        chatRoomId: ds.id,
-                        dateTime: (ds['lastTs'] as Timestamp).toDate(),
-                        myUsername: myUsername,
-                        onClick: listTileClick,
-                      );
-                    },
-                    itemCount: snapshot.data!.docs.length,
-                  )
-            : const Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget searchUserList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: userStream as Stream<QuerySnapshot>,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return snapshot.hasData
-            ? snapshot.data!.docs.isEmpty
-                ? Center(child: Text('No User Found'))
-                : ListView.builder(
-                    shrinkWrap: true,
-                    // reverse: true,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot ds = snapshot.data!.docs[index];
-                      return SearchListTile(
-                        profileUrl: ds["profileURL"],
-                        name: ds["displayName"],
-                        email: ds["email"],
-                        username: ds["username"],
-                        onClick: listTileClick,
-                      );
-                    },
-                    itemCount: snapshot.data!.docs.length,
-                  )
-            : const Center(
-                child: CircularProgressIndicator(),
-              );
-      },
-    );
-  }
-
-  logOut(FirebaseServiceProvider firebaseServiceProvider) async {
-    setState(() {
-      isLogingOut = !isLogingOut;
-    });
-    await firebaseServiceProvider.signOut();
-    setState(() {
-      isLogingOut = !isLogingOut;
-    });
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (ctx, _, __) => StartScreen(),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    myUsername =
-        FirebaseServiceProvider().user!.email!.replaceAll('@gmail.com', '');
-    initializeRoomStream();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    searchController.dispose();
+  selectScreen() {
+    switch (_currentIndex) {
+      case 0:
+        return const Center(
+          child: Text('Comming Soon'),
+        );
+      case 1:
+        return ChatsScreen();
+      case 2:
+        return const Center(
+          child: Text('Comming Soon'),
+        );
+      default:
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    FirebaseServiceProvider firebaseServiceProvider =
-        Provider.of<FirebaseServiceProvider>(context, listen: false);
-
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 330,
-              collapsedHeight: 70,
-              toolbarHeight: 60,
-              pinned: true,
-              backgroundColor: Color.fromRGBO(244, 241, 253, 1),
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
-                  ),
-                  padding:
-                      EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
-                  margin: EdgeInsets.only(top: 0),
-                  child: Row(
-                    textBaseline: TextBaseline.alphabetic,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    children: [
-                      Text(
-                        'Chats',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Manage',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                titlePadding: EdgeInsets.zero,
-                background: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
-                        ),
-                      ),
-                      title: Text(
-                        'Good Morning', // !
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          'Alexie Blender', // !
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          RoundIconButton(
-                            icon: Icons.search,
-                            onClick: () {}, //!
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
-                          RoundIconButton(
-                            icon: Icons.add,
-                            onClick: () {}, //!
-                            backgroundColor:
-                                Theme.of(context).colorScheme.onSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 25),
-                      height: 122,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.only(left: 20, right: 10),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return StoryTile(
-                            profileUrl: index == 0
-                                ? 'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413'
-                                : 'https://i.pinimg.com/originals/28/c5/54/28c55499f5401efd54ff75339bc63331.jpg',
-                            name: 'Jay',
-                            isYou: index == 0,
-                          );
-                        },
-                        itemCount: 3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      body: selectScreen(),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        height: 65,
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(30),
             ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: getChatRoomsList(),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 500,
-                    ),
-                  ),
-                ],
-              ),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 5,
+                color: Colors.black12,
+              )
+            ]),
+        child: NavigationBar(
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          currentIndex: _currentIndex,
+          children: [
+            NavigationBarItem(
+              icon: Icons.explore_outlined,
+              activeIcon: Icons.explore,
+              label: 'Discover',
+              activeColor: Theme.of(context).colorScheme.onSecondary,
+            ),
+            NavigationBarItem(
+              icon: Icons.chat_bubble_outline,
+              activeIcon: Icons.chat_bubble,
+              label: 'Chats',
+              activeColor: Theme.of(context).colorScheme.onSecondary,
+            ),
+            NavigationBarItem(
+              icon: Icons.settings_outlined,
+              activeIcon: Icons.settings,
+              label: 'Settings',
+              activeColor: Theme.of(context).colorScheme.onSecondary,
             ),
           ],
         ),
@@ -296,38 +80,77 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class RoundIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onClick;
-  final Color backgroundColor;
+class NavigationBar extends StatelessWidget {
+  final List<NavigationBarItem> children;
+  final int currentIndex;
+  final Function onTap;
 
-  const RoundIconButton({
+  const NavigationBar({
     Key? key,
+    required this.currentIndex,
+    required this.children,
+    required this.onTap,
+  }) : super(key: key);
+
+  currentActiveItem(index) {
+    if (currentIndex == index) {
+      children[index].isActive = true;
+    }
+    return children[index];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: children
+          .map(
+            (item) => GestureDetector(
+              onTap: () {
+                onTap(children.indexOf(item));
+              },
+              child: currentActiveItem(children.indexOf(item)),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class NavigationBarItem extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final IconData activeIcon;
+  final Color activeColor;
+  var isActive = false;
+
+  NavigationBarItem({
+    Key? key,
+    required this.label,
     required this.icon,
-    required this.onClick,
-    required this.backgroundColor,
+    required this.activeIcon,
+    required this.activeColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClick,
-      child: Container(
-        child: Icon(
-          icon,
-          color: Colors.white,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Icon(
+          isActive ? activeIcon : icon,
+          color: isActive ? activeColor : Colors.grey.shade600,
+          size: isActive ? 26 : 25,
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: backgroundColor,
-          border: Border.all(
-            width: 1,
-            color: Theme.of(context).primaryColor.withOpacity(0.35),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isActive ? 15 : 14,
+            color: isActive ? activeColor : Colors.grey.shade600,
           ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -1,15 +1,14 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/home_screen.dart';
-import 'package:chat_app/screens/home_screen_main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'package:chat_app/screens/log_in_screen.dart';
-import 'package:chat_app/screens/start_screen.dart';
-import 'screens/auth_screen.dart';
+import './provider/firebase_service.dart';
+import './screens/chats_screen.dart';
+import './screens/home_screen.dart';
+import './screens/start_screen.dart';
+import './screens/auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +23,8 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final Color primaryColor = Color.fromRGBO(108, 99, 255, 1);
+
+  MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,15 +50,16 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (ctx) => StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapShot) {
-              if (snapShot.hasData) {
-                return HomeScreenMain();
-              } else {
-                return StartScreen();
-              }
-            }),
-        // LogInScreen.routeName: (ctx) => LogInScreen(),
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapShot) {
+                if (snapShot.hasData) {
+                  return HomeScreen();
+                } else {
+                  return StartScreen();
+                }
+              },
+            ),
+        ChatsScreen.routeName: (ctx) => ChatsScreen(),
         AuthScreen.routeName: (ctx) => AuthScreen(),
       },
     );

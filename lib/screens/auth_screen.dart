@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:chat_app/screens/home_screen.dart';
+import 'package:chat_app/screens/chats_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
@@ -97,7 +97,7 @@ class _AuthScreenState extends State<AuthScreen>
     Navigator.pushAndRemoveUntil(
       context,
       PageRouteBuilder(
-        pageBuilder: (ctx, _, __) => const HomeScreen(),
+        pageBuilder: (ctx, _, __) => const ChatsScreen(),
       ),
       (route) => false,
     );
