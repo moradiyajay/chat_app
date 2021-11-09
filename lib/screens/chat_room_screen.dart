@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_escapes
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +12,18 @@ import '../components/media_icon.dart';
 import '../widgets/message_input_field.dart';
 
 class ChatRoomScreen extends StatefulWidget {
-  final String chatWithUsername, myUsername, profileUrl;
+  final String chatWithUsername;
+  final String profileUrl;
+  final String chatWithUid;
+  final String myUid;
 
-  const ChatRoomScreen(this.chatWithUsername, this.myUsername, this.profileUrl,
-      {Key? key})
-      : super(key: key);
+  const ChatRoomScreen({
+    required this.chatWithUsername,
+    required this.chatWithUid,
+    required this.myUid,
+    required this.profileUrl,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ChatRoomScreenState createState() => _ChatRoomScreenState();
@@ -25,7 +34,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   late Stream messageStream;
   TextEditingController controller = TextEditingController();
 
-  String getChatRoomIdByUsernames(String a, String b) {
+  String getChatRoomIdByUid(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       return "$b\_$a";
     } else {
@@ -36,8 +45,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   void initState() {
     super.initState();
-    chatRoomId =
-        getChatRoomIdByUsernames(widget.chatWithUsername, widget.myUsername);
+    chatRoomId = getChatRoomIdByUid(widget.chatWithUid, widget.myUid);
     checkAndCreateChatRoom();
     getPreviousMessages();
   }
@@ -46,8 +54,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     await DataBase().createChatRoom(chatRoomId, {
       'lastMessage': '',
       'lastTs': DateTime.now(),
-      'lastSendBy': widget.myUsername,
-      'users': [widget.myUsername, widget.chatWithUsername],
+      'lastSendBy': widget.myUid,
+      'users': [widget.myUid, widget.chatWithUid],
     });
   }
 
@@ -59,43 +67,48 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     return StreamBuilder<QuerySnapshot>(
       stream: messageStream as Stream<QuerySnapshot>,
       builder: (context, snapshots) {
-        if (snapshots.hasData) {
-          return ListView.builder(
-            padding: const EdgeInsets.only(bottom: 230),
-            reverse: true,
-            itemBuilder: (ctx, index) {
-              DocumentSnapshot ds = snapshots.data!.docs[index];
-              return ds['sendBy'] == widget.myUsername
-                  ? SendMessage(ds: ds)
-                  : ReciveMessage(ds: ds);
-            },
-            itemCount: snapshots.data!.docs.length,
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
+        return snapshots.hasData
+            ? ListView.builder(
+                padding: const EdgeInsets.only(bottom: 230),
+                reverse: true,
+                itemBuilder: (ctx, index) {
+                  DocumentSnapshot ds = snapshots.data!.docs[index];
+                  return ds['sendBy'] == widget.myUid
+                      ? SendMessage(
+                          ds: ds,
+                          key: ValueKey(ds.id),
+                        )
+                      : ReciveMessage(
+                          ds: ds,
+                          key: ValueKey(ds.id),
+                        );
+                },
+                itemCount: snapshots.data!.docs.length,
+              )
+            : const Center(child: CircularProgressIndicator());
       },
     );
   }
 
   onSendClick(String sendMessage) {
     if (sendMessage.isEmpty) return;
+    FocusScope.of(context).unfocus();
     String message = sendMessage;
     controller.clear();
-    var timeStamp = DateTime.now();
+    var timeStamp = Timestamp.now();
 
     Map<String, dynamic> messageInfo = {
       'message': message,
       'ts': timeStamp,
-      'sendBy': widget.myUsername,
+      'sendBy': widget.myUid,
     };
 
     DataBase().addMessage(chatRoomId, messageInfo).then((value) async {
       Map<String, dynamic> lastMessageInfo = {
         'lastMessage': message,
         'lastTs': timeStamp,
-        'lastSendBy': widget.myUsername,
-        'users': [widget.myUsername, widget.chatWithUsername],
+        'lastSendBy': widget.myUid,
+        'users': [widget.myUid, widget.chatWithUid],
       };
       await DataBase().updateLastMessgae(chatRoomId, lastMessageInfo);
     });
@@ -118,86 +131,83 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           profileUrl: widget.profileUrl,
         ),
       ),
-      body: Container(
-        child: Stack(
-          children: [
-            messageList(),
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 32),
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(25),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 5,
-                      color: Colors.black12,
-                    ),
-                  ],
+      body: Stack(
+        children: [
+          Expanded(child: messageList()),
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 32),
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(25),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      margin:
-                          const EdgeInsets.only(bottom: 30, left: 16, right: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          MediaIcon(
-                            backgroundColor: Colors.black87,
-                            text: '',
-                            onClick: () {},
-                            icon: Icons.mic_none_outlined,
-                          ),
-                          MessageInputField(
-                            conroller: controller,
-                            onSendClick: onSendClick,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      mainAxisSize: MainAxisSize.max,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 5,
+                    color: Colors.black12,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin:
+                        const EdgeInsets.only(bottom: 30, left: 16, right: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         MediaIcon(
-                          backgroundColor: photoColor,
-                          text: 'Image',
+                          backgroundColor: Colors.black87,
+                          text: '',
                           onClick: () {},
-                          icon: Icons.photo_outlined,
+                          icon: Icons.mic_none_outlined,
                         ),
-                        MediaIcon(
-                            backgroundColor: fileColor,
-                            text: 'File',
-                            onClick: () {},
-                            icon: Icons.attach_file_outlined),
-                        MediaIcon(
-                          backgroundColor: contactColor,
-                          text: 'Contact',
-                          onClick: () {},
-                          icon: Icons.person_outline,
-                        ),
-                        MediaIcon(
-                          backgroundColor: locationColor,
-                          text: 'Location',
-                          onClick: () {},
-                          icon: Icons.location_on_outlined,
+                        MessageInputField(
+                          conroller: controller,
+                          onSendClick: onSendClick,
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      MediaIcon(
+                        backgroundColor: photoColor,
+                        text: 'Image',
+                        onClick: () {},
+                        icon: Icons.photo_outlined,
+                      ),
+                      MediaIcon(
+                          backgroundColor: fileColor,
+                          text: 'File',
+                          onClick: () {},
+                          icon: Icons.attach_file_outlined),
+                      MediaIcon(
+                        backgroundColor: contactColor,
+                        text: 'Contact',
+                        onClick: () {},
+                        icon: Icons.person_outline,
+                      ),
+                      MediaIcon(
+                        backgroundColor: locationColor,
+                        text: 'Location',
+                        onClick: () {},
+                        icon: Icons.location_on_outlined,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

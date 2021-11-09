@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
 
 import '../helpers/database_service.dart';
 import '../provider/firebase_service.dart';
@@ -26,44 +25,51 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-  late Stream userStream;
-  late Stream chatRoomStream;
-  String myUsername = '';
+  late Stream<QuerySnapshot> userStream;
+  late Stream<QuerySnapshot> chatRoomStream;
+  String myUid = '';
   bool isLogingOut = false;
   bool isSearchOn = false;
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
 
   void onSearchBtnClick(String username) async {
-    if (username == myUsername) return;
+    // ! update
+    if (username == 'myUsername') return;
     setState(() {
       isSearching = true;
     });
     userStream = await DataBase().getUserByUserName(username);
   }
 
-  void listTileClick(String chatWithUsername, String profileUrl) {
+  void listTileClick({
+    required String chatWithUid,
+    required String chatWithUsername,
+    required String profileUrl,
+  }) {
     Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, _, __) => ChatRoomScreen(
-          chatWithUsername,
-          myUsername,
-          profileUrl,
+          chatWithUsername: chatWithUsername,
+          chatWithUid: chatWithUid,
+          myUid: myUid,
+          profileUrl: profileUrl,
         ),
       ),
     );
   }
 
   initializeRoomStream() async {
-    chatRoomStream = await DataBase().getChatRooms();
+    chatRoomStream = DataBase().getChatRooms();
+    userStream = await DataBase().getUserByUserName(myUid);
     setState(() {});
   }
 
   Widget getChatRoomsList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: chatRoomStream as Stream<QuerySnapshot>,
-      builder: (context, snapshot) {
+    return StreamBuilder(
+      stream: chatRoomStream,
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -78,8 +84,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         lastMessage: ds['lastMessage'],
                         chatRoomId: ds.id,
                         dateTime: (ds['lastTs'] as Timestamp).toDate(),
-                        myUsername: myUsername,
+                        myUid: myUid,
                         onClick: listTileClick,
+                        key: ValueKey(ds.id),
                       );
                     },
                     itemCount: snapshot.data!.docs.length,
@@ -91,8 +98,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   Widget searchUserList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: userStream as Stream<QuerySnapshot>,
-      builder: (context, snapshot) {
+      stream: userStream,
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -108,7 +115,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         profileUrl: ds["profileURL"],
                         name: ds["displayName"],
                         email: ds["email"],
-                        username: ds["username"],
+                        chatWithUsername: ds["username"],
+                        chatWithUid: ds["userID"],
                         onClick: listTileClick,
                       );
                     },
@@ -140,8 +148,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     super.initState();
-    myUsername =
-        FirebaseServiceProvider().user!.email!.replaceAll('@gmail.com', '');
+    myUid = FirebaseServiceProvider().user!.uid;
     initializeRoomStream();
   }
 
@@ -239,7 +246,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         children: [
                           RoundIconButton(
                             icon: Icons.search,
-                            onClick: () {}, //!
+                            onClick: () async {
+                              userStream = await DataBase()
+                                  .getUserByUserName('animeflixcloud.1');
+                              setState(() {
+                                isSearchOn = !isSearchOn;
+                              });
+                            }, //!
                             backgroundColor: Theme.of(context).primaryColor,
                           ),
                           RoundIconButton(
@@ -279,7 +292,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: getChatRoomsList(),
+                    child: Expanded(
+                        child:
+                            isSearchOn ? searchUserList() : getChatRoomsList()),
                   ),
                   Expanded(
                     child: Container(

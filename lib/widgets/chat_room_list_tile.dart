@@ -8,13 +8,17 @@ import '../helpers/database_service.dart';
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage;
   final String chatRoomId;
-  final String myUsername;
+  final String myUid;
   final DateTime dateTime;
-  final Function onClick;
+  final Function({
+    required String chatWithUid,
+    required String chatWithUsername,
+    required String profileUrl,
+  }) onClick;
   const ChatRoomListTile(
       {required this.lastMessage,
       required this.chatRoomId,
-      required this.myUsername,
+      required this.myUid,
       required this.onClick,
       required this.dateTime,
       Key? key})
@@ -26,15 +30,20 @@ class ChatRoomListTile extends StatefulWidget {
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
   String profileUrl = "";
-  String name = "";
-  String username = "";
+  String displayName = "";
+  String chatWithUsername = "";
+  String chatWithUid = "";
 
   getThisUserInfo() async {
-    username =
-        widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
-    QuerySnapshot querySnapshot = await DataBase().getUserInfo(username);
-    name = "${querySnapshot.docs[0]["displayName"]}";
-    profileUrl = "${querySnapshot.docs[0]["profileURL"]}";
+    chatWithUid =
+        widget.chatRoomId.replaceFirst(widget.myUid, "").replaceFirst("_", "");
+    DocumentSnapshot documentSnapshot =
+        await DataBase().getUserInfo(chatWithUid);
+    Map<String, dynamic> docMap =
+        documentSnapshot.data() as Map<String, dynamic>;
+    displayName = "${docMap["displayName"]}";
+    profileUrl = "${docMap["profileURL"]}";
+    chatWithUsername = "${docMap["username"]}";
     setState(() {});
   }
 
@@ -61,7 +70,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 5),
       title: Text(
-        name,
+        displayName,
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
@@ -98,7 +107,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           ),
         ],
       ),
-      onTap: () => widget.onClick(username, profileUrl),
+      onTap: () => widget.onClick(
+        chatWithUid: chatWithUid,
+        chatWithUsername: chatWithUsername,
+        profileUrl: profileUrl,
+      ),
     );
   }
 }

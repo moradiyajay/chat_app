@@ -31,27 +31,24 @@ class DataBase {
         .set(messageInfo);
   }
 
-  Future<QuerySnapshot> getUserInfo(String username) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .where("username", isEqualTo: username)
-        .get();
+  Future<DocumentSnapshot> getUserInfo(String uid) async {
+    return await _firebaseFirestore.doc('users/$uid').get();
   }
 
   // No need to use
   Future createChatRoom(
       String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
-    final snapShot = await FirebaseFirestore.instance
-        .collection("chatRooms")
-        .doc(chatRoomId)
-        .get();
+    chatRoomId = chatRoomId.trim();
+    print('prom create chatRoomsID $chatRoomId');
+    final snapShot =
+        await _firebaseFirestore.collection("chatRooms").doc(chatRoomId).get();
 
     if (snapShot.exists) {
       // chatroom already exists
       return true;
     } else {
       // chatroom does not exists
-      return FirebaseFirestore.instance
+      return _firebaseFirestore
           .collection("chatRooms")
           .doc(chatRoomId)
           .update(chatRoomInfoMap);
@@ -67,12 +64,11 @@ class DataBase {
         .snapshots();
   }
 
-  Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String myUsername =
-        FirebaseAuth.instance.currentUser!.email!.replaceAll('@gmail.com', '');
+  Stream<QuerySnapshot> getChatRooms() {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
     return _firebaseFirestore
         .collection('chatRooms')
-        .where("users", arrayContains: myUsername)
+        .where("users", arrayContains: uid)
         .orderBy('lastTs', descending: true)
         .snapshots();
   }

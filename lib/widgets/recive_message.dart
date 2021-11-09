@@ -33,21 +33,32 @@ class ReciveMessage extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                ds['message'],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 140,
+                ),
+                child: Text(
+                  ds['message'],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 DateFormat('hh:mm aa').format(dateTime),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 10,
                   color: Colors.white,
                 ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.check,
+                size: 10,
+                color: Colors.white,
               ),
             ],
           ),

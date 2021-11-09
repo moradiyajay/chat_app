@@ -88,7 +88,8 @@ class FirebaseServiceProvider with ChangeNotifier {
       await DataBase().addUserToFirebase(user!.uid, {
         "displayName": user!.displayName,
         "email": user!.email,
-        "profileURL": user!.photoURL,
+        "profileURL": user!.photoURL ??
+            'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
         "username": user!.email!.replaceAll('@gmail.com', ''),
       });

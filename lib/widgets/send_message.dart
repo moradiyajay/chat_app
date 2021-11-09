@@ -16,12 +16,14 @@ class SendMessage extends StatelessWidget {
     Timestamp ts = ds['ts'];
     DateTime dateTime = ts.toDate();
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         const Spacer(),
         Container(
-          alignment: Alignment.centerRight,
+          // alignment: Alignment.centerRight,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.only(
@@ -34,12 +36,17 @@ class SendMessage extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                ds['message'],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 140,
+                ),
+                child: Text(
+                  ds['message'],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -52,7 +59,7 @@ class SendMessage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               const Icon(
-                Icons.mark_chat_unread_outlined,
+                Icons.check,
                 size: 10,
                 color: Colors.white,
               ),

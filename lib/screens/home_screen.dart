@@ -21,7 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text('Comming Soon'),
         );
       case 1:
-        return const ChatsScreen();
+        return const ChatsScreen(
+          key: ValueKey('chats_screen'),
+        );
       case 2:
         return Center(
           child: IconButton(
