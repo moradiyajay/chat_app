@@ -1,3 +1,4 @@
+import 'package:chat_app/provider/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 import './chats_screen.dart';
@@ -20,10 +21,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text('Comming Soon'),
         );
       case 1:
-        return ChatsScreen();
+        return const ChatsScreen();
       case 2:
-        return const Center(
-          child: Text('Comming Soon'),
+        return Center(
+          child: IconButton(
+              onPressed: () {
+                FirebaseServiceProvider().signOut();
+              },
+              icon: Icon(Icons.exit_to_app)),
         );
       default:
     }
@@ -59,19 +64,19 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.explore_outlined,
               activeIcon: Icons.explore,
               label: 'Discover',
-              activeColor: Theme.of(context).colorScheme.onSecondary,
+              activeColor: Theme.of(context).colorScheme.secondary,
             ),
             NavigationBarItem(
               icon: Icons.chat_bubble_outline,
               activeIcon: Icons.chat_bubble,
               label: 'Chats',
-              activeColor: Theme.of(context).colorScheme.onSecondary,
+              activeColor: Theme.of(context).colorScheme.secondary,
             ),
             NavigationBarItem(
               icon: Icons.settings_outlined,
               activeIcon: Icons.settings,
               label: 'Settings',
-              activeColor: Theme.of(context).colorScheme.onSecondary,
+              activeColor: Theme.of(context).colorScheme.secondary,
             ),
           ],
         ),

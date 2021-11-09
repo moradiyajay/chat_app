@@ -131,20 +131,6 @@ class _AuthScreenState extends State<AuthScreen>
             parent: _animationController,
             curve: const Interval(0.25, 0.75, curve: Curves.fastOutSlowIn)));
 
-    // _conPassAnimation.addStatusListener((status) {
-    //   if (status == AnimationStatus.completed) {
-    //     setState(() {
-    //       _isNewUser = false;
-    //       _firebaseServiceProvider.isNewUser = _isNewUser;
-    //     });
-    //   } else if (status == AnimationStatus.reverse) {
-    //     setState(() {
-    //       _isNewUser = true;
-    //       _firebaseServiceProvider.isNewUser = _isNewUser;
-    //     });
-    //   }
-    // });
-
     // For login animation need to be done
     if (!_isNewUser) _animationController.forward();
 
@@ -197,7 +183,7 @@ class _AuthScreenState extends State<AuthScreen>
                   ),
                   RectangleInputField(
                     hintText: 'Email',
-                    primaryColor: Theme.of(context).colorScheme.onSecondary,
+                    primaryColor: Theme.of(context).colorScheme.secondary,
                     secondaryColor: Colors.white,
                     icon: Icons.person,
                     onSaved: (value) =>
@@ -206,7 +192,7 @@ class _AuthScreenState extends State<AuthScreen>
                   RectanglePasswordField(
                     hintText: 'Password',
                     controller: _pass,
-                    primaryColor: Theme.of(context).colorScheme.onSecondary,
+                    primaryColor: Theme.of(context).colorScheme.secondary,
                     secondaryColor: Colors.white,
                     icon: Icons.lock,
                     textInputAction: _isNewUser
@@ -236,8 +222,7 @@ class _AuthScreenState extends State<AuthScreen>
                         },
                         child: RectanglePasswordField(
                           hintText: 'Confirm Password',
-                          primaryColor:
-                              Theme.of(context).colorScheme.onSecondary,
+                          primaryColor: Theme.of(context).colorScheme.secondary,
                           secondaryColor: Colors.white,
                           icon: Icons.lock,
                           confirmController: _pass,
@@ -279,7 +264,7 @@ class _AuthScreenState extends State<AuthScreen>
                           ? 'Alreay have an account? Log In'
                           : 'Don\'t have an account? Register',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

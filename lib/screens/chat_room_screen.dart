@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../provider/database_service.dart';
+import '../helpers/database_service.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/recive_message.dart';
 import '../widgets/send_message.dart';

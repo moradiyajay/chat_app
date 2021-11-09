@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
         primaryColor: primaryColor,
         colorScheme: Theme.of(context).colorScheme.copyWith(
               primary: primaryColor,
-              secondary: Colors.white,
-              onSecondary: Colors.blueGrey.shade900,
+              secondary: Colors.blueGrey.shade900,
+              onSecondary: Colors.white,
             ),
         textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
@@ -51,8 +51,13 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (ctx) => StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapShot) {
-                if (snapShot.hasData) {
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.hasData) {
                   return HomeScreen();
                 } else {
                   return StartScreen();

@@ -9,7 +9,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/database_service.dart';
+import '../helpers/database_service.dart';
 import '../provider/firebase_service.dart';
 import 'chat_room_screen.dart';
 import 'start_screen.dart';
@@ -246,7 +246,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             icon: Icons.add,
                             onClick: () {}, //!
                             backgroundColor:
-                                Theme.of(context).colorScheme.onSecondary,
+                                Theme.of(context).colorScheme.secondary,
                           ),
                         ],
                       ),

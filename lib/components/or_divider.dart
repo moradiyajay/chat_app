@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class OrDivider extends StatelessWidget {
+  const OrDivider({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -16,7 +18,7 @@ class OrDivider extends StatelessWidget {
             child: Text(
               "OR",
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
+                color: Theme.of(context).colorScheme.secondary,
                 fontWeight: FontWeight.w600,
               ),
             ),

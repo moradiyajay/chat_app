@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../provider/database_service.dart';
+import '../helpers/database_service.dart';
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage;
