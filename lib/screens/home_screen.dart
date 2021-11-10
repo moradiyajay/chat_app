@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 FirebaseServiceProvider().signOut();
               },
-              icon: Icon(Icons.exit_to_app)),
+              icon: const Icon(Icons.exit_to_app)),
         );
       default:
     }

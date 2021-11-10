@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../helpers/database_service.dart';
-import '../helpers/database_service.dart';
 
 class FirebaseServiceProvider with ChangeNotifier {
   bool _isNewUser = true;

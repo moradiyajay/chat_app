@@ -1,5 +1,9 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DataBase {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -39,7 +43,6 @@ class DataBase {
   Future createChatRoom(
       String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
     chatRoomId = chatRoomId.trim();
-    print('prom create chatRoomsID $chatRoomId');
     final snapShot =
         await _firebaseFirestore.collection("chatRooms").doc(chatRoomId).get();
 
@@ -72,4 +75,17 @@ class DataBase {
         .orderBy('lastTs', descending: true)
         .snapshots();
   }
+
+  Future<String> uploadFile(File image, String roomId) async {
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('chat-images')
+        // ignore: unnecessary_string_escapes
+        .child('$roomId\_${Timestamp.now().seconds.toString()}');
+
+    await ref.putFile(File(image.path)).whenComplete(() => null);
+    return ref.getDownloadURL();
+  }
+
+  void deleteImage() {}
 }

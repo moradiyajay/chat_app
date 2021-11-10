@@ -22,13 +22,19 @@ class ReciveMessage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: radius,
               topRight: radius,
               bottomRight: radius,
               bottomLeft: Radius.zero,
             ),
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 5,
+                color: Colors.black12,
+              ),
+            ],
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -40,7 +46,7 @@ class ReciveMessage extends StatelessWidget {
                 child: Text(
                   ds['message'],
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -50,15 +56,15 @@ class ReciveMessage extends StatelessWidget {
               Text(
                 DateFormat('hh:mm aa').format(dateTime),
                 style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.white,
+                  fontSize: 11,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               const Icon(
                 Icons.check,
-                size: 10,
-                color: Colors.white,
+                size: 12,
+                color: Colors.black,
               ),
             ],
           ),

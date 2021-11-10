@@ -79,6 +79,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           fontSize: 15,
           fontWeight: FontWeight.w500,
           color: Colors.black54,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       trailing: Column(

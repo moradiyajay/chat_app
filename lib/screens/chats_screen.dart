@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 
+import 'package:chat_app/components/round_icon.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -305,42 +306,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class RoundIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onClick;
-  final Color backgroundColor;
-
-  const RoundIconButton({
-    Key? key,
-    required this.icon,
-    required this.onClick,
-    required this.backgroundColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClick,
-      child: Container(
-        child: Icon(
-          icon,
-          color: Colors.white,
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: backgroundColor,
-          border: Border.all(
-            width: 1,
-            color: Theme.of(context).primaryColor.withOpacity(0.35),
-          ),
         ),
       ),
     );

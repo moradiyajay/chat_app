@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'package:chat_app/components/round_icon.dart';
+
 class MessageInputField extends StatelessWidget {
   final Function onSendClick;
+  final VoidCallback onAddClick;
   final TextEditingController conroller;
 
   const MessageInputField({
     Key? key,
     required this.onSendClick,
+    required this.onAddClick,
     required this.conroller,
   }) : super(key: key);
 
@@ -24,6 +28,24 @@ class MessageInputField extends StatelessWidget {
           textInputAction: TextInputAction.done,
           onEditingComplete: () => onSendClick(conroller.text),
           decoration: InputDecoration(
+            prefixIcon: GestureDetector(
+              onTap: onAddClick,
+              child: Container(
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 11),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).primaryColor.withOpacity(0.8),
+                  border: Border.all(
+                    width: 1,
+                    color: Theme.of(context).primaryColor.withOpacity(0.35),
+                  ),
+                ),
+              ),
+            ),
             suffixIcon: GestureDetector(
               onTap: () => onSendClick(conroller.text),
               child: const Icon(

@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
               primary: primaryColor,
               secondary: Colors.blueGrey.shade900,
               onSecondary: Colors.white,
+              background: Color.fromRGBO(244, 241, 253, 1),
             ),
         textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
