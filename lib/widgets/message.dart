@@ -7,15 +7,16 @@ import 'package:intl/intl.dart';
 
 class SendMessage extends StatelessWidget {
   MessageType messageType;
+  bool isMe;
 
   TextStyle messageStyle = const TextStyle(
-    color: Colors.white,
     fontSize: 16,
     fontWeight: FontWeight.w500,
   );
   SendMessage({
     Key? key,
     required this.ds,
+    required this.isMe,
     required this.messageType,
   }) : super(key: key);
 
@@ -36,33 +37,41 @@ class SendMessage extends StatelessWidget {
       switch (messageType) {
         case MessageType.Text:
           return TextMessage(
-              message: message, messageStyle: messageStyle, dateTime: dateTime);
+            message: message,
+            textColor: isMe ? Colors.white : Colors.black,
+            dateTime: dateTime,
+          );
         case MessageType.Image:
           return ImageMessage(
             imageUrl: imageUrl,
             message: message,
-            messageStyle: messageStyle,
+            textColor: isMe ? Colors.white : Colors.black,
             dateTime: dateTime,
           );
         default:
           return TextMessage(
-              message: message, messageStyle: messageStyle, dateTime: dateTime);
+            message: message,
+            textColor: isMe ? Colors.white : Colors.black,
+            dateTime: dateTime,
+          );
       }
     }
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
           padding: padding,
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.8),
+            color: isMe
+                ? Theme.of(context).primaryColor.withOpacity(0.8)
+                : Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: radius,
               topRight: radius,
-              bottomRight: Radius.zero,
-              bottomLeft: radius,
+              bottomRight: isMe ? Radius.zero : radius,
+              bottomLeft: isMe ? radius : Radius.zero,
             ),
             boxShadow: const [
               BoxShadow(
@@ -83,12 +92,12 @@ class TextMessage extends StatelessWidget {
   const TextMessage({
     Key? key,
     required this.message,
-    required this.messageStyle,
+    required this.textColor,
     required this.dateTime,
   }) : super(key: key);
 
   final String message;
-  final TextStyle messageStyle;
+  final Color textColor;
   final DateTime dateTime;
 
   @override
@@ -102,22 +111,26 @@ class TextMessage extends StatelessWidget {
           ),
           child: Text(
             message,
-            style: messageStyle,
+            style: TextStyle(
+              fontSize: 16,
+              color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const SizedBox(width: 8),
         Text(
           DateFormat('hh:mm aa').format(dateTime),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
-            color: Colors.white,
+            color: textColor,
           ),
         ),
         const SizedBox(width: 4),
-        const Icon(
+        Icon(
           Icons.check,
           size: 12,
-          color: Colors.white,
+          color: textColor,
         ),
       ],
     );
@@ -129,13 +142,13 @@ class ImageMessage extends StatelessWidget {
     Key? key,
     required this.imageUrl,
     required this.message,
-    required this.messageStyle,
+    required this.textColor,
     required this.dateTime,
   }) : super(key: key);
 
   final String imageUrl;
   final String message;
-  final TextStyle messageStyle;
+  final Color textColor;
   final DateTime dateTime;
 
   @override
@@ -172,7 +185,11 @@ class ImageMessage extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 textWidthBasis: TextWidthBasis.longestLine,
-                style: messageStyle,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                  fontWeight: FontWeight.w500,
+                ),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -184,16 +201,13 @@ class ImageMessage extends StatelessWidget {
             children: [
               Text(
                 DateFormat('hh:mm aa').format(dateTime),
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.white,
-                ),
+                style: TextStyle(fontSize: 11, color: textColor),
               ),
               const SizedBox(width: 4),
-              const Icon(
+              Icon(
                 Icons.check,
                 size: 12,
-                color: Colors.white,
+                color: textColor,
               ),
             ],
           ),

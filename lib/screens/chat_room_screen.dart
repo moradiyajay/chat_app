@@ -2,14 +2,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../helpers/database_service.dart';
-import '../widgets/recive_message.dart';
-import '../widgets/send_message.dart';
+import '../widgets/message.dart';
 import '../components/media_icon.dart';
 import '../widgets/message_input_field.dart';
 
@@ -89,16 +88,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 reverse: true,
                 itemBuilder: (ctx, index) {
                   DocumentSnapshot ds = snapshots.data!.docs[index];
-                  return ds['sendBy'] == widget.myUid
-                      ? SendMessage(
-                          ds: ds,
-                          messageType: MessageType.values[ds['type'] as int],
-                          key: ValueKey(ds.id),
-                        )
-                      : ReciveMessage(
-                          ds: ds,
-                          key: ValueKey(ds.id),
-                        );
+                  return SendMessage(
+                    ds: ds,
+                    messageType: MessageType.values[ds['type'] as int],
+                    isMe: ds['sendBy'] == widget.myUid,
+                    key: ValueKey(ds.id),
+                  );
                 },
                 itemCount: snapshots.data!.docs.length,
               )
@@ -201,6 +196,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       _previewImageFile = File(imageFile.path);
       _messageType = MessageType.Image;
     });
+  }
+
+  _filePicker() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      // ignore: unused_local_variable
+      String? path = result.files.first.path;
+      File file = File(path ?? '');
+      String downloadUrl = await DataBase().uploadFile(file, _chatRoomId);
+      print(downloadUrl);
+    } else {}
   }
 
   @override
@@ -340,7 +347,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         MediaIcon(
                             backgroundColor: fileColor,
                             text: 'Document',
-                            onClick: () {},
+                            onClick: _filePicker,
                             icon: CupertinoIcons.doc_fill),
                         MediaIcon(
                           backgroundColor: contactColor,
