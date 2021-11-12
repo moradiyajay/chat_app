@@ -5,9 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:contact_picker/contact_picker.dart';
 
 import '../helpers/database_service.dart';
 import '../widgets/message.dart';
@@ -124,7 +124,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     controller.clear();
     var timeStamp = Timestamp.now();
 
-    if (tmpMessageType != MessageType.Text) {
+    if (tmpMessageType == MessageType.Image ||
+        tmpMessageType == MessageType.Document) {
       try {
         setState(() {
           _messageType = MessageType.Text;
@@ -143,8 +144,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           controller.text = message;
           _messageType = tmpMessageType;
           _previewFileName = '';
+          if (_uploadedFileUrl != '') {
+            _previewFile.delete();
+          }
           _uploadedFileUrl = '';
-          _previewFile.delete();
         });
         // ignore: avoid_print
         print(error);
@@ -174,15 +177,15 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       setState(() {
         _messageType = MessageType.Text;
         _previewFileName = '';
+        if (_uploadedFileUrl != '') {
+          _previewFile.delete();
+        }
         _uploadedFileUrl = '';
-        _previewFile.delete();
       });
     } catch (error) {
       setState(() {
         controller.text = message;
         _previewFileName = '';
-        _uploadedFileUrl = '';
-        _previewFile.delete();
       });
     }
   }
@@ -253,9 +256,30 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     });
   }
 
-  _contactPicker() async {
-    final ContactPicker _contactPicker = ContactPicker();
-    Contact contact = await _contactPicker.selectContact();
+  _contactPicker() async {}
+
+  _locationPicker() async {
+    FocusScope.of(context).unfocus();
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      LocationPermission secondTryPermission =
+          await Geolocator.requestPermission();
+      if (secondTryPermission == LocationPermission.denied ||
+          secondTryPermission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('please allow location permission'),
+          ),
+        );
+      }
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    _messageType = MessageType.Location;
+    controller.text =
+        'http://maps.google.com/maps?z=12&t=m&q=loc:${position.latitude}+${position.longitude}';
   }
 
   @override
@@ -450,7 +474,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         MediaIcon(
                           backgroundColor: locationColor,
                           text: 'Location',
-                          onClick: () {},
+                          onClick: _locationPicker,
                           icon: CupertinoIcons.location,
                         ),
                       ],
@@ -459,7 +483,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               ),
             ),
           ),
-          if (_messageType != MessageType.Text)
+          if (_messageType == MessageType.Image)
             Positioned(
               top: 8,
               right: 8,

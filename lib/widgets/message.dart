@@ -34,9 +34,10 @@ class SendMessage extends StatelessWidget {
     String message = ds['message'];
     String fileUrl = ds['fileUrl'];
     DateTime dateTime = ts.toDate();
-    EdgeInsets padding = messageType != MessageType.Text
-        ? const EdgeInsets.symmetric(horizontal: 5, vertical: 5)
-        : const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    EdgeInsets padding =
+        messageType == MessageType.Image || messageType == MessageType.Document
+            ? const EdgeInsets.symmetric(horizontal: 5, vertical: 5)
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
 
     Widget messageLayout() {
       switch (messageType) {
@@ -57,6 +58,12 @@ class SendMessage extends StatelessWidget {
           return DocumentMessage(
             message: message,
             fileUrl: fileUrl,
+            textColor: isMe ? Colors.white : Colors.black,
+            dateTime: dateTime,
+          );
+        case MessageType.Location:
+          return LocationMessage(
+            message: message,
             textColor: isMe ? Colors.white : Colors.black,
             dateTime: dateTime,
           );
@@ -129,6 +136,56 @@ class TextMessage extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          DateFormat('hh:mm aa').format(dateTime),
+          style: TextStyle(
+            fontSize: 11,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Icon(
+          Icons.check,
+          size: 12,
+          color: textColor,
+        ),
+      ],
+    );
+  }
+}
+
+class LocationMessage extends StatelessWidget {
+  const LocationMessage({
+    Key? key,
+    required this.message,
+    required this.textColor,
+    required this.dateTime,
+  }) : super(key: key);
+
+  final String message;
+  final Color textColor;
+  final DateTime dateTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          constraints: const BoxConstraints(
+            maxWidth: 140,
+          ),
+          child: SelectableText(
+            message,
+            style: TextStyle(
+              fontSize: 16,
+              color: textColor,
+              decoration: TextDecoration.underline,
               fontWeight: FontWeight.w500,
             ),
           ),

@@ -24,6 +24,8 @@ class MessageInputField extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
         ),
         child: TextField(
+          enableSuggestions: true,
+          textCapitalization: TextCapitalization.sentences,
           controller: conroller,
           textInputAction: TextInputAction.done,
           onEditingComplete: () => onSendClick(conroller.text),
@@ -57,7 +59,7 @@ class MessageInputField extends StatelessWidget {
             hintStyle: const TextStyle(color: Colors.black45),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 15,
-              horizontal: 24,
+              horizontal: 0,
             ),
             border: InputBorder.none,
           ),
