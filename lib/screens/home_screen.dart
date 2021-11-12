@@ -1,5 +1,7 @@
 import 'package:chat_app/provider/firebase_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 import './chats_screen.dart';
 
@@ -12,23 +14,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   selectScreen() {
     switch (_currentIndex) {
       case 0:
-        return const Center(
-          child: Text('Comming Soon'),
-        );
-      case 1:
         return const ChatsScreen(
           key: ValueKey('chats_screen'),
         );
-      case 2:
+      case 1:
         return Center(
-          child: IconButton(
+          child: OutlinedButton.icon(
+              label: const Text('Log Out'),
               onPressed: () {
-                FirebaseServiceProvider().signOut();
+                FirebaseServiceProvider().logOut();
               },
               icon: const Icon(Icons.exit_to_app)),
         );
@@ -63,20 +62,14 @@ class _HomeScreenState extends State<HomeScreen> {
           currentIndex: _currentIndex,
           children: [
             NavigationBarItem(
-              icon: Icons.explore_outlined,
-              activeIcon: Icons.explore,
-              label: 'Discover',
-              activeColor: Theme.of(context).colorScheme.secondary,
-            ),
-            NavigationBarItem(
-              icon: Icons.chat_bubble_outline,
-              activeIcon: Icons.chat_bubble,
+              icon: CupertinoIcons.chat_bubble,
+              activeIcon: CupertinoIcons.chat_bubble_text_fill,
               label: 'Chats',
               activeColor: Theme.of(context).colorScheme.secondary,
             ),
             NavigationBarItem(
-              icon: Icons.settings_outlined,
-              activeIcon: Icons.settings,
+              icon: CupertinoIcons.settings,
+              activeIcon: CupertinoIcons.settings,
               label: 'Settings',
               activeColor: Theme.of(context).colorScheme.secondary,
             ),
@@ -109,7 +102,7 @@ class NavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: children
           .map(
             (item) => GestureDetector(
@@ -141,23 +134,27 @@ class NavigationBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Icon(
-          isActive ? activeIcon : icon,
-          color: isActive ? activeColor : Colors.grey.shade600,
-          size: isActive ? 26 : 25,
-        ),
-        const SizedBox(width: 10),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isActive ? 15 : 14,
+    return SizedBox(
+      height: 50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Icon(
+            isActive ? activeIcon : icon,
             color: isActive ? activeColor : Colors.grey.shade600,
+            size: isActive ? 26 : 25,
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: isActive ? 15 : 14,
+              color: isActive ? activeColor : Colors.grey.shade600,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

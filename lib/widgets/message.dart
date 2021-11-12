@@ -182,9 +182,12 @@ class LocationMessage extends StatelessWidget {
           ),
           child: SelectableText(
             message,
+            maxLines: 10,
+            minLines: 1,
             style: TextStyle(
               fontSize: 16,
               color: textColor,
+              overflow: TextOverflow.ellipsis,
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.w500,
             ),
@@ -274,7 +277,7 @@ class _DocumentMessageState extends State<DocumentMessage> {
                   style: TextStyle(
                     color: widget.textColor,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -358,6 +361,20 @@ class ImageMessage extends StatelessWidget {
               imageUrl,
               fit: BoxFit.fitWidth,
               alignment: Alignment.topCenter,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
             ),
           ),
         ),

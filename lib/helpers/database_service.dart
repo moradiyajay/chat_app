@@ -11,7 +11,11 @@ class DataBase {
     await _firebaseFirestore.collection('users').doc(userID).set(userInfo);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUserName(String username) async {
+  Stream<QuerySnapshot> getUsers() {
+    return _firebaseFirestore.collection("users").snapshots();
+  }
+
+  Stream<QuerySnapshot> getUserByUserName(String username) {
     return _firebaseFirestore
         .collection("users")
         .where("username", isEqualTo: username)
@@ -92,5 +96,21 @@ class DataBase {
     return customData;
   }
 
-  void deleteImage() {}
+  Future<String> uploadStory(File image, [SettableMetadata? metadata]) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    Reference ref = _firebaseStorageRef
+        .child('user-stories')
+        // ignore: unnecessary_string_escapes
+        .child('$uid\_${Timestamp.now().seconds.toString()}');
+
+    await ref.putFile(File(image.path), metadata).whenComplete(() => null);
+    return ref.getDownloadURL();
+  }
+
+  Future<void> setStory(String storyUrl) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    return _firebaseFirestore.collection('users').doc(uid).update({
+      'story': storyUrl,
+    });
+  }
 }

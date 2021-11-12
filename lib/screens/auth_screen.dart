@@ -59,7 +59,7 @@ class _AuthScreenState extends State<AuthScreen>
     if (isValide) {
       _formKey.currentState!.save();
       togleLoading();
-      firebaseServiceProvider.signInWithEmail().then(
+      firebaseServiceProvider.logInWithEmail().then(
         (error) {
           togleLoading();
           error != null ? errorHandler(error) : navigatToHomeScreen();
@@ -73,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen>
 
   googleLogIn(FirebaseServiceProvider firebaseServiceProvider) {
     togleLoading();
-    firebaseServiceProvider.signInwithGoogle().then(
+    firebaseServiceProvider.logInwithGoogle().then(
       (error) {
         togleLoading();
         error != null ? errorHandler(error) : navigatToHomeScreen();

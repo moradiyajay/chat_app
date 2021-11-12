@@ -57,7 +57,7 @@ class _LogInScreenState extends State<LogInScreen> {
     if (isValid) {
       _formKey.currentState!.save();
       togleIsLoginIn();
-      firebaseServiceProvider.signInWithEmail().then((error) {
+      firebaseServiceProvider.logInWithEmail().then((error) {
         togleIsLoginIn();
         if (error != null) {
           ScaffoldMessenger.of(context).clearSnackBars();
@@ -80,7 +80,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
   googleLogIn(FirebaseServiceProvider firebaseServiceProvider) {
     togleIsLoginIn();
-    firebaseServiceProvider.signInwithGoogle().then(
+    firebaseServiceProvider.logInwithGoogle().then(
       (error) {
         togleIsLoginIn();
         if (error != null) {

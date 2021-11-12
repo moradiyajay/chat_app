@@ -4,57 +4,84 @@ class StoryTile extends StatelessWidget {
   final String profileUrl;
   final String name;
   final bool isYou;
+  final VoidCallback onTap;
   const StoryTile(
       {Key? key,
       required this.profileUrl,
       required this.name,
+      required this.onTap,
       this.isYou = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: 110,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                minRadius: 33,
-                backgroundImage: NetworkImage(
-                  profileUrl,
-                ),
-              ),
-              if (isYou)
-                Positioned(
-                  bottom: 0,
-                  right: 10,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        width: 110,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(isYou ? 0 : 2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(colors: [
+                      Colors.yellow.shade600,
+                      Colors.orange.shade400,
+                      Colors.red.shade400
+                    ]),
+                  ),
                   child: Container(
-                    child: const Icon(Icons.add, color: Colors.white),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.white,
+                    ),
+                    child: CircleAvatar(
+                      minRadius: 28,
+                      backgroundImage: NetworkImage(
+                        profileUrl,
+                      ),
                     ),
                   ),
                 ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Text(
-            isYou ? 'Add Story' : name,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 15,
-              color: Colors.black.withOpacity(0.75),
+                if (isYou)
+                  Positioned(
+                    bottom: 0,
+                    right: 10,
+                    child: Container(
+                      child: const Icon(Icons.add, color: Colors.white),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 5),
+            Text(
+              isYou ? 'Add Story' : name,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 15,
+                color: Colors.black.withOpacity(0.75),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

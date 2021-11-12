@@ -35,7 +35,7 @@ class FirebaseServiceProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<String?> signInwithGoogle() async {
+  Future<String?> logInwithGoogle() async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -57,6 +57,7 @@ class FirebaseServiceProvider with ChangeNotifier {
         "profileURL": user!.photoURL ??
             'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
+        "story": null,
         "username": user!.email!.replaceAll('@gmail.com', ''),
       });
       notifyListeners();
@@ -66,7 +67,7 @@ class FirebaseServiceProvider with ChangeNotifier {
     }
   }
 
-  Future<String?> signInWithEmail() async {
+  Future<String?> logInWithEmail() async {
     try {
       if (_isNewUser) {
         await _auth.createUserWithEmailAndPassword(
@@ -90,6 +91,7 @@ class FirebaseServiceProvider with ChangeNotifier {
         "profileURL": user!.photoURL ??
             'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
+        "story": null,
         "username": user!.email!.replaceAll('@gmail.com', ''),
       });
     } on FirebaseAuthException catch (error) {
@@ -128,7 +130,7 @@ class FirebaseServiceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> logOut() async {
     if (await _googleSignIn.isSignedIn()) {
       await _googleSignIn.disconnect();
     }

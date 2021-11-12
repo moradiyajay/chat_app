@@ -1,9 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, curly_braces_in_flow_control_structures
 
 import 'dart:ui';
 
 import 'package:chat_app/components/round_icon.dart';
+import 'package:chat_app/screens/story_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -26,7 +28,10 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
+  late User? _user;
+
   late Stream<QuerySnapshot> userStream;
+  late Stream<QuerySnapshot> storyStream;
   late Stream<QuerySnapshot> chatRoomStream;
   String myUid = '';
   bool isLogingOut = false;
@@ -61,10 +66,67 @@ class _ChatsScreenState extends State<ChatsScreen> {
     );
   }
 
-  initializeRoomStream() async {
-    chatRoomStream = DataBase().getChatRooms();
-    userStream = await DataBase().getUserByUserName(myUid);
+  initializeStreams() async {
+    DataBase db = DataBase();
+    chatRoomStream = db.getChatRooms();
+    userStream = db.getUserByUserName(myUid);
+    storyStream = db.getUsers();
     setState(() {});
+  }
+
+  Widget _storyList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: storyStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        List<DocumentSnapshot> docs = snapshot.data!.docs;
+        final myDocIndex = docs.indexWhere((user) => user.id == _user!.uid);
+
+        if (myDocIndex != -1) {
+          final DocumentSnapshot myDoc = docs[myDocIndex];
+          docs.removeAt(myDocIndex);
+          docs.insert(0, myDoc);
+        }
+        docs.removeWhere(
+            (user) => user['story'] == null && user.id != _user!.uid);
+        return Container(
+          margin: EdgeInsets.only(top: 10, bottom: 25),
+          height: 122,
+          child: ListView.builder(
+            shrinkWrap: false,
+            padding: EdgeInsets.only(left: 20, right: 10),
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return StoryTile(
+                profileUrl: docs[index]['profileURL'],
+                name: index == 0 ? 'Your Story' : docs[index]['displayName'],
+                isYou: index == 0 && docs[index]['story'] == null,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, _, __) {
+                        return StoryScreen(
+                          profileUrl: docs[index]['profileURL'],
+                          displayName: docs[index]['displayName'],
+                          viewStory: docs[index]['story'] != null,
+                          storyfileUrl: docs[index]['story'] ?? '',
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+            itemCount: docs.length,
+          ),
+        );
+      },
+    );
   }
 
   Widget getChatRoomsList() {
@@ -135,11 +197,21 @@ class _ChatsScreenState extends State<ChatsScreen> {
     );
   }
 
+  String greetings() {
+    int hour = DateTime.now().hour;
+    if (hour < 12) {
+      return "Good Mornig";
+    } else if (hour >= 12 && hour < 18)
+      return " Good Afternoon";
+    else
+      return " Good Evening";
+  }
+
   logOut(FirebaseServiceProvider firebaseServiceProvider) async {
     setState(() {
       isLogingOut = !isLogingOut;
     });
-    await firebaseServiceProvider.signOut();
+    await firebaseServiceProvider.logOut();
     setState(() {
       isLogingOut = !isLogingOut;
     });
@@ -154,8 +226,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     super.initState();
-    myUid = FirebaseServiceProvider().user!.uid;
-    initializeRoomStream();
+    _user = FirebaseServiceProvider().user;
+    myUid = _user!.uid;
+    initializeStreams();
   }
 
   @override
@@ -223,11 +296,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
-                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
+                          _user!.photoURL ??
+                              'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
                         ),
                       ),
                       title: Text(
-                        'Good Morning', // !
+                        greetings(),
                         style: TextStyle(
                           color: Colors.grey.shade500,
                           fontSize: 12,
@@ -237,7 +311,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
-                          'Alexie Blender', // !
+                          _user!.displayName ?? 'Alexie Blender', // !
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -247,11 +321,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           RoundIconButton(
                             icon: Icons.search,
                             onClick: () async {
-                              userStream = await DataBase()
+                              userStream = DataBase()
                                   .getUserByUserName('animeflixcloud.1');
                               setState(() {
                                 isSearchOn = !isSearchOn;
@@ -268,25 +343,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 25),
-                      height: 122,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.only(left: 20, right: 10),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return StoryTile(
-                            profileUrl: index == 0
-                                ? 'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413'
-                                : 'https://i.pinimg.com/originals/28/c5/54/28c55499f5401efd54ff75339bc63331.jpg',
-                            name: 'Jay',
-                            isYou: index == 0,
-                          );
-                        },
-                        itemCount: 3,
-                      ),
-                    ),
+                    _storyList()
                   ],
                 ),
               ),
