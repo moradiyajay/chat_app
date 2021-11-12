@@ -68,6 +68,21 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Widget getChatRoomsList() {
+    List<Widget> _getList(List<DocumentSnapshot> docs) {
+      List<Widget> list = [];
+      for (var doc in docs) {
+        list.add(ChatRoomListTile(
+          lastMessage: doc['lastMessage'],
+          chatRoomId: doc.id,
+          dateTime: (doc['lastTs'] as Timestamp).toDate(),
+          myUid: myUid,
+          onClick: listTileClick,
+          key: ValueKey(doc.id),
+        ));
+      }
+      return list;
+    }
+
     return StreamBuilder(
       stream: chatRoomStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -77,20 +92,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
                 ? Center(child: Text('Start Chating'))
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemBuilder: (ctx, index) {
-                      DocumentSnapshot ds = snapshot.data!.docs[index];
-                      return ChatRoomListTile(
-                        lastMessage: ds['lastMessage'],
-                        chatRoomId: ds.id,
-                        dateTime: (ds['lastTs'] as Timestamp).toDate(),
-                        myUid: myUid,
-                        onClick: listTileClick,
-                        key: ValueKey(ds.id),
-                      );
-                    },
-                    itemCount: snapshot.data!.docs.length,
+                : Column(
+                    children: [
+                      ..._getList(snapshot.data!.docs),
+                    ],
                   )
             : const Center(child: CircularProgressIndicator());
       },
@@ -171,9 +176,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
             SliverAppBar(
               expandedHeight: 330,
               collapsedHeight: 70,
-              toolbarHeight: 60,
               pinned: true,
-              backgroundColor: Color.fromRGBO(244, 241, 253, 1),
+              backgroundColor: Theme.of(context).colorScheme.background,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 title: Container(
@@ -185,7 +189,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                   padding:
                       EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
-                  margin: EdgeInsets.only(top: 0),
                   child: Row(
                     textBaseline: TextBaseline.alphabetic,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,7 +198,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         'Chats',
                         style: TextStyle(
                           color: Colors.black87,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -289,18 +292,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
               ),
             ),
             SliverList(
-              delegate: SliverChildListDelegate(
+              delegate: SliverChildListDelegate.fixed(
                 [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Expanded(
-                        child:
-                            isSearchOn ? searchUserList() : getChatRoomsList()),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    color: Colors.white,
+                    child: isSearchOn ? searchUserList() : getChatRoomsList(),
                   ),
-                  Expanded(
-                    child: Container(
-                      height: 500,
-                    ),
+                  Container(
+                    height: 500,
                   ),
                 ],
               ),

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class DataBase {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
+  final Reference _firebaseStorageRef = FirebaseStorage.instance.ref();
   Future addUserToFirebase(String userID, Map<String, dynamic> userInfo) async {
     await _firebaseFirestore.collection('users').doc(userID).set(userInfo);
   }
@@ -76,15 +75,21 @@ class DataBase {
         .snapshots();
   }
 
-  Future<String> uploadFile(File image, String roomId) async {
-    Reference ref = FirebaseStorage.instance
-        .ref()
+  Future<String> uploadFile(File image, String roomId,
+      [SettableMetadata? metadata]) async {
+    Reference ref = _firebaseStorageRef
         .child('chat-images')
         // ignore: unnecessary_string_escapes
         .child('$roomId\_${Timestamp.now().seconds.toString()}');
 
-    await ref.putFile(File(image.path)).whenComplete(() => null);
+    await ref.putFile(File(image.path), metadata).whenComplete(() => null);
     return ref.getDownloadURL();
+  }
+
+  Future<Map<String, String>?> getMetaData(String location) async {
+    var data = await _firebaseStorageRef.child(location).getMetadata();
+    Map<String, String>? customData = data.customMetadata;
+    return customData;
   }
 
   void deleteImage() {}

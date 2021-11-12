@@ -77,7 +77,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
         widget.lastMessage,
         style: const TextStyle(
           fontSize: 15,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: Colors.black54,
           overflow: TextOverflow.ellipsis,
         ),
