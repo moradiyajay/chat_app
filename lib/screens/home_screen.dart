@@ -1,4 +1,5 @@
 import 'package:chat_app/provider/firebase_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -15,6 +16,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // subscribe to topic on each app start-up
+    () async {
+      String? token = await FirebaseMessaging.instance.getToken();
+      // ignore: avoid_print
+      print('token: $token');
+    }();
+  }
 
   selectScreen() {
     switch (_currentIndex) {

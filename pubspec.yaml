@@ -41,6 +41,7 @@ dependencies:
   google_sign_in: ^5.2.0
   cloud_firestore: ^2.5.4
   firebase_storage: ^10.1.0
+  firebase_messaging: ^11.1.0
   image_picker: ^0.8.4+4
   file_picker: ^4.2.1
   geolocator: ^7.7.1
