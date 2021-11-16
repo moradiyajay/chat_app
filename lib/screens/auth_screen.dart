@@ -3,7 +3,6 @@ import 'package:chat_app/components/social_icon.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:chat_app/screens/chats_screen.dart';
@@ -106,8 +105,7 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   void initState() {
     _isNewUser = widget.newUser;
-    _firebaseServiceProvider =
-        Provider.of<FirebaseServiceProvider>(context, listen: false);
+    _firebaseServiceProvider = FirebaseServiceProvider();
     _firebaseServiceProvider.isNewUser = _isNewUser;
 
     _animationController = AnimationController(

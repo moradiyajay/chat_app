@@ -1,3 +1,4 @@
+import 'package:chat_app/helpers/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,11 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // subscribe to topic on each app start-up
     () async {
       String? token = await FirebaseMessaging.instance.getToken();
-      // ignore: avoid_print
-      print('token: $token');
+      await DataBase().setDeviceId(token ?? "");
     }();
   }
 

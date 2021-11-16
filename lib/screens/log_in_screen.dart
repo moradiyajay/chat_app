@@ -14,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 class LogInScreen extends StatefulWidget {
   static String routeName = '/log-in';
@@ -116,8 +115,7 @@ class _LogInScreenState extends State<LogInScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    FirebaseServiceProvider firebaseServiceProvider =
-        Provider.of<FirebaseServiceProvider>(context);
+    FirebaseServiceProvider firebaseServiceProvider = FirebaseServiceProvider();
     firebaseServiceProvider.isNewUser = false;
     return Scaffold(
       body: SafeArea(

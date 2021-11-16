@@ -38,6 +38,13 @@ class DataBase {
         .set(messageInfo);
   }
 
+  Future<void> setDeviceId(String id) async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    return _firebaseFirestore.collection('users').doc(uid).update({
+      'notificationId': id,
+    });
+  }
+
   Future<DocumentSnapshot> getUserInfo(String uid) async {
     return await _firebaseFirestore.doc('users/$uid').get();
   }

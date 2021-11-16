@@ -90,9 +90,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
           final DocumentSnapshot myDoc = docs[myDocIndex];
           docs.removeAt(myDocIndex);
           docs.insert(0, myDoc);
+          docs.removeWhere(
+              (user) => user['story'] == null && user.id != _user!.uid);
         }
-        docs.removeWhere(
-            (user) => user['story'] == null && user.id != _user!.uid);
         return Container(
           margin: EdgeInsets.only(top: 10, bottom: 25),
           height: 122,
@@ -326,8 +326,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           RoundIconButton(
                             icon: Icons.search,
                             onClick: () async {
-                              userStream = DataBase()
-                                  .getUserByUserName('animeflixcloud.1');
+                              userStream =
+                                  DataBase().getUserByUserName('jaymoradiya18');
                               setState(() {
                                 isSearchOn = !isSearchOn;
                               });

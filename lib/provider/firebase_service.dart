@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../helpers/database_service.dart';
 
-class FirebaseServiceProvider with ChangeNotifier {
+class FirebaseServiceProvider {
   bool _isNewUser = true;
   String _userName = '';
   String _userEmail = '';
@@ -60,9 +60,9 @@ class FirebaseServiceProvider with ChangeNotifier {
         "story": null,
         "username": user!.email!.replaceAll('@gmail.com', ''),
       });
-      notifyListeners();
+      // notifyListeners();
     } on FirebaseAuthException {
-      notifyListeners();
+      // notifyListeners();
       rethrow;
     }
   }
@@ -74,14 +74,14 @@ class FirebaseServiceProvider with ChangeNotifier {
           email: _userEmail,
           password: _userPassword,
         );
-        notifyListeners();
+        // notifyListeners();
       } else {
         await _auth.signInWithEmailAndPassword(
           email: _userEmail,
           password: _userPassword,
         );
 
-        notifyListeners();
+        // notifyListeners();
       }
       userName = user!.email!.replaceAll('@gmail.com', '');
 
@@ -135,6 +135,6 @@ class FirebaseServiceProvider with ChangeNotifier {
       await _googleSignIn.disconnect();
     }
     await _auth.signOut();
-    notifyListeners();
+    // notifyListeners();
   }
 }
