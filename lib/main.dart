@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:chat_app/screens/search_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -163,6 +164,7 @@ class _MyAppState extends State<MyApp> {
             ),
         ChatsScreen.routeName: (ctx) => ChatsScreen(),
         AuthScreen.routeName: (ctx) => AuthScreen(),
+        SearchScreen.routeName: (ctx) => SearchScreen(),
       },
     );
   }

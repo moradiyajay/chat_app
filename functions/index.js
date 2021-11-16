@@ -6,7 +6,7 @@ const admin= require('firebase-admin');
 
 
 admin.initializeApp();
-exports.onCreate = functions.firestore.document('/chatRooms/{roomId}/chats/{document}').onCreate((snapshot, context) => {
+exports.onMessageSend = functions.firestore.document('/chatRooms/{roomId}/chats/{document}').onCreate((snapshot, context) => {
     let roomId = context.params.roomId;
     const sendUserId = snapshot.data().sendBy;
     const message = snapshot.data().message;
@@ -28,7 +28,7 @@ exports.onCreate = functions.firestore.document('/chatRooms/{roomId}/chats/{docu
         
         const notificationContent = {
             notification: {
-                title: data.displayName,
+                title: `New Message from ${data.displayName}`,
                 body: type[messageType] != "Text" && message == "" ?  `Sent you ${type[messageType]}` : message,
                 icon: "default",
                 sound : "default"
@@ -40,3 +40,24 @@ exports.onCreate = functions.firestore.document('/chatRooms/{roomId}/chats/{docu
         });
     });
 });
+
+// not working
+exports.onStoryUpload = functions.firestore.document('/users/{userId}').onUpdate(async (change,context) => {
+    const userId = context.params.userId;
+    const userAfterData = change.after.data();
+    console.log(` userId: ${userId}`);
+    if (userAfterData.story == null) return;
+    const notificationContent = {
+        notification: {
+            title: "Story",
+            body: `${userAfterData.displayName != "" ? userAfterData.displayName : userAfterData.userName} upload story`,
+            icon: "default",
+            sound : "default"
+        }
+    };
+    await admin.messaging().sendToTopic("story",notificationContent).then(result => {
+        console.log("Story notification sent!");
+        return null;
+    });
+});
+

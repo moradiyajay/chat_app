@@ -1,7 +1,7 @@
 import 'package:chat_app/components/text_field_container.dart';
 import 'package:flutter/material.dart';
 
-class RectangleSearchField extends StatelessWidget {
+class RectangleSearchField extends StatefulWidget {
   final Function onSearchBtnClick;
   final Function onBackBtnClick;
   // final bool isSearching;
@@ -16,6 +16,11 @@ class RectangleSearchField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<RectangleSearchField> createState() => _RectangleSearchFieldState();
+}
+
+class _RectangleSearchFieldState extends State<RectangleSearchField> {
+  @override
   Widget build(BuildContext context) {
     return TextFieldContiner(
       primaryColor: Theme.of(context).primaryColor,
@@ -24,17 +29,20 @@ class RectangleSearchField extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           IconButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
             icon: const Icon(Icons.arrow_back),
             padding: EdgeInsets.zero,
             alignment: Alignment.centerLeft,
             color: Colors.white,
-            onPressed: () => onBackBtnClick(),
+            onPressed: () => widget.onBackBtnClick(),
           ),
           Expanded(
             child: TextField(
               cursorColor: Colors.white,
-              controller: searchController,
-              onSubmitted: (value) => onSearchBtnClick(value),
+              controller: widget.searchController,
+              onSubmitted: (value) => widget.onSearchBtnClick(value),
               textInputAction: TextInputAction.done,
               decoration: const InputDecoration(
                 fillColor: Colors.white,
@@ -53,7 +61,8 @@ class RectangleSearchField extends StatelessWidget {
             alignment: Alignment.centerRight,
             icon: const Icon(Icons.search),
             color: Colors.white,
-            onPressed: () => onSearchBtnClick(searchController.text),
+            onPressed: () =>
+                widget.onSearchBtnClick(widget.searchController.text),
           )
         ],
       ),

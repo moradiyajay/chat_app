@@ -3,6 +3,7 @@
 import 'dart:ui';
 
 import 'package:chat_app/components/round_icon.dart';
+import 'package:chat_app/screens/search_screen.dart';
 import 'package:chat_app/screens/story_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,7 +31,6 @@ class ChatsScreen extends StatefulWidget {
 class _ChatsScreenState extends State<ChatsScreen> {
   late User? _user;
 
-  late Stream<QuerySnapshot> userStream;
   late Stream<QuerySnapshot> storyStream;
   late Stream<QuerySnapshot> chatRoomStream;
   String myUid = '';
@@ -38,15 +38,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool isSearchOn = false;
   bool isSearching = false;
   TextEditingController searchController = TextEditingController();
-
-  void onSearchBtnClick(String username) async {
-    // ! update
-    if (username == 'myUsername') return;
-    setState(() {
-      isSearching = true;
-    });
-    userStream = await DataBase().getUserByUserName(username);
-  }
 
   void listTileClick({
     required String chatWithUid,
@@ -69,7 +60,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
   initializeStreams() async {
     DataBase db = DataBase();
     chatRoomStream = db.getChatRooms();
-    userStream = db.getUserByUserName(myUid);
     storyStream = db.getUsers();
     setState(() {});
   }
@@ -160,39 +150,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     ],
                   )
             : const Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget searchUserList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: userStream,
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return snapshot.hasData
-            ? snapshot.data!.docs.isEmpty
-                ? Center(child: Text('No User Found'))
-                : ListView.builder(
-                    shrinkWrap: true,
-                    // reverse: true,
-                    itemBuilder: (context, index) {
-                      DocumentSnapshot ds = snapshot.data!.docs[index];
-                      return SearchListTile(
-                        profileUrl: ds["profileURL"],
-                        name: ds["displayName"],
-                        email: ds["email"],
-                        chatWithUsername: ds["username"],
-                        chatWithUid: ds["userID"],
-                        onClick: listTileClick,
-                      );
-                    },
-                    itemCount: snapshot.data!.docs.length,
-                  )
-            : const Center(
-                child: CircularProgressIndicator(),
-              );
       },
     );
   }
@@ -323,16 +280,32 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          RoundIconButton(
-                            icon: Icons.search,
-                            onClick: () async {
-                              userStream =
-                                  DataBase().getUserByUserName('jaymoradiya18');
-                              setState(() {
-                                isSearchOn = !isSearchOn;
-                              });
-                            }, //!
-                            backgroundColor: Theme.of(context).primaryColor,
+                          Hero(
+                            tag: "searchIcon",
+                            child: RoundIconButton(
+                              icon: Icons.search,
+                              onClick: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                      pageBuilder: (context, _, __) {
+                                    return SearchScreen();
+                                  }, transitionsBuilder: (context,
+                                          Animation<double> animation,
+                                          _,
+                                          child) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  }),
+                                );
+
+                                setState(() {
+                                  isSearchOn = !isSearchOn;
+                                });
+                              }, //!
+                              backgroundColor: Theme.of(context).primaryColor,
+                            ),
                           ),
                           RoundIconButton(
                             icon: Icons.add,
@@ -354,9 +327,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     color: Colors.white,
-                    child: isSearchOn ? searchUserList() : getChatRoomsList(),
+                    child: getChatRoomsList(),
                   ),
                   Container(
+                    color: Colors.white,
                     height: 500,
                   ),
                 ],

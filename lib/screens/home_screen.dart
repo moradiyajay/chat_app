@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     () async {
       String? token = await FirebaseMessaging.instance.getToken();
+      await FirebaseMessaging.instance.subscribeToTopic("story");
       await DataBase().setDeviceId(token ?? "");
     }();
   }

@@ -1,5 +1,6 @@
 import 'package:chat_app/components/or_divider.dart';
 import 'package:chat_app/components/social_icon.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,7 @@ class _AuthScreenState extends State<AuthScreen>
     Navigator.pushAndRemoveUntil(
       context,
       PageRouteBuilder(
-        pageBuilder: (ctx, _, __) => const ChatsScreen(),
+        pageBuilder: (ctx, _, __) => const HomeScreen(),
       ),
       (route) => false,
     );
