@@ -199,146 +199,139 @@ class _ChatsScreenState extends State<ChatsScreen> {
     // FirebaseServiceProvider firebaseServiceProvider =
     //     Provider.of<FirebaseServiceProvider>(context, listen: false);
 
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 330,
-              collapsedHeight: 70,
-              pinned: true,
-              backgroundColor: Theme.of(context).colorScheme.background,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
-                  ),
-                  padding:
-                      EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
-                  child: Row(
-                    textBaseline: TextBaseline.alphabetic,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    children: [
-                      Text(
-                        'Chats',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Manage',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                titlePadding: EdgeInsets.zero,
-                background: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          _user!.photoURL ??
-                              'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
-                        ),
-                      ),
-                      title: Text(
-                        greetings(),
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          _user!.displayName ?? 'Alexie Blender', // !
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Hero(
-                            tag: "searchIcon",
-                            child: RoundIconButton(
-                              icon: Icons.search,
-                              onClick: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                      pageBuilder: (context, _, __) {
-                                    return SearchScreen();
-                                  }, transitionsBuilder: (context,
-                                          Animation<double> animation,
-                                          _,
-                                          child) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  }),
-                                );
-
-                                setState(() {
-                                  isSearchOn = !isSearchOn;
-                                });
-                              }, //!
-                              backgroundColor: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          RoundIconButton(
-                            icon: Icons.add,
-                            onClick: () {}, //!
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    _storyList()
-                  ],
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          expandedHeight: 330,
+          collapsedHeight: 70,
+          pinned: true,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          elevation: 0,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(30),
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate.fixed(
-                [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    color: Colors.white,
-                    child: getChatRoomsList(),
+              padding:
+                  EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+              child: Row(
+                textBaseline: TextBaseline.alphabetic,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                children: [
+                  Text(
+                    'Chats',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  Container(
-                    color: Colors.white,
-                    height: 500,
+                  GestureDetector(
+                    onTap: () {},
+                    child: Text(
+                      'Manage',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black45,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
+            titlePadding: EdgeInsets.zero,
+            background: Column(
+              children: [
+                SizedBox(height: 10),
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      _user!.photoURL ??
+                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
+                    ),
+                  ),
+                  title: Text(
+                    greetings(),
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      _user!.displayName ?? 'Alexie Blender', // !
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Hero(
+                        tag: "searchIcon",
+                        child: RoundIconButton(
+                          icon: Icons.search,
+                          onClick: () {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(pageBuilder: (context, _, __) {
+                                return SearchScreen();
+                              }, transitionsBuilder: (context,
+                                  Animation<double> animation, _, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              }),
+                            );
+
+                            setState(() {
+                              isSearchOn = !isSearchOn;
+                            });
+                          }, //!
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      RoundIconButton(
+                        icon: Icons.add,
+                        onClick: () {}, //!
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                      ),
+                    ],
+                  ),
+                ),
+                _storyList()
+              ],
+            ),
+          ),
         ),
-      ),
+        SliverList(
+          delegate: SliverChildListDelegate.fixed(
+            [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                color: Colors.white,
+                child: getChatRoomsList(),
+              ),
+              Container(
+                color: Colors.white,
+                height: 500,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

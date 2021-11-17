@@ -1,5 +1,6 @@
 import 'package:chat_app/helpers/database_service.dart';
 import 'package:chat_app/provider/firebase_service.dart';
+import 'package:chat_app/screens/settings_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   @override
   void initState() {
@@ -35,14 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           key: ValueKey('chats_screen'),
         );
       case 1:
-        return Center(
-          child: OutlinedButton.icon(
-              label: const Text('Log Out'),
-              onPressed: () {
-                FirebaseServiceProvider().logOut();
-              },
-              icon: const Icon(Icons.exit_to_app)),
-        );
+        return SettingScreen();
       default:
     }
   }
@@ -50,7 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: selectScreen(),
+      body: SafeArea(
+        child: selectScreen(),
+      ),
       bottomNavigationBar: Container(
         margin: const EdgeInsets.symmetric(horizontal: 1),
         height: 65,
