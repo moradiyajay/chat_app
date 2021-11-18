@@ -7,46 +7,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 class DataBase {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final Reference _firebaseStorageRef = FirebaseStorage.instance.ref();
+  final String _uid = FirebaseAuth.instance.currentUser!.uid;
+
   Future addUserToFirebase(String userID, Map<String, dynamic> userInfo) async {
     await _firebaseFirestore.collection('users').doc(userID).set(userInfo);
-  }
-
-  Stream<QuerySnapshot> getUsers() {
-    return _firebaseFirestore.collection("users").snapshots();
-  }
-
-  Stream<QuerySnapshot> getUserByUserName(String username) {
-    return _firebaseFirestore
-        .collection("users")
-        .where("username", isEqualTo: username)
-        .snapshots();
-  }
-
-  Future addMessage(String roomId, Map<String, dynamic> messageInfo) async {
-    return _firebaseFirestore
-        .collection('chatRooms')
-        .doc(roomId)
-        .collection('chats')
-        .add(messageInfo);
-  }
-
-  Future updateLastMessgae(
-      String roomId, Map<String, dynamic> messageInfo) async {
-    return _firebaseFirestore
-        .collection('chatRooms')
-        .doc(roomId)
-        .set(messageInfo);
-  }
-
-  Future<void> setDeviceId(String id) async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    return _firebaseFirestore.collection('users').doc(uid).update({
-      'notificationId': id,
-    });
-  }
-
-  Future<DocumentSnapshot> getUserInfo(String uid) async {
-    return await _firebaseFirestore.doc('users/$uid').get();
   }
 
   // No need to use
@@ -68,6 +32,47 @@ class DataBase {
     }
   }
 
+  Future addMessage(String roomId, Map<String, dynamic> messageInfo) async {
+    return _firebaseFirestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('chats')
+        .add(messageInfo);
+  }
+
+  Future<void> setDeviceId(String id) async {
+    return _firebaseFirestore.collection('users').doc(_uid).update({
+      'notificationId': id,
+    });
+  }
+
+  Future<void> updateUserData(Map<String, dynamic> data) async {
+    return _firebaseFirestore.collection('users').doc(_uid).update(data);
+  }
+
+  Stream<QuerySnapshot> getUsers() {
+    return _firebaseFirestore.collection("users").snapshots();
+  }
+
+  Stream<QuerySnapshot> getUserByUserName(String username) {
+    return _firebaseFirestore
+        .collection("users")
+        .where("username", isEqualTo: username)
+        .snapshots();
+  }
+
+  Future updateLastMessgae(
+      String roomId, Map<String, dynamic> messageInfo) async {
+    return _firebaseFirestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .set(messageInfo);
+  }
+
+  Future<DocumentSnapshot> getUserInfo(String? uid, [bool isMe = false]) async {
+    return await _firebaseFirestore.doc('users/${isMe ? _uid : uid}').get();
+  }
+
   Stream<QuerySnapshot> getAllMessages(String roomId) {
     return _firebaseFirestore
         .collection('chatRooms')
@@ -78,18 +83,17 @@ class DataBase {
   }
 
   Stream<QuerySnapshot> getChatRooms() {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
     return _firebaseFirestore
         .collection('chatRooms')
-        .where("users", arrayContains: uid)
+        .where("users", arrayContains: _uid)
         .orderBy('lastTs', descending: true)
         .snapshots();
   }
 
   Future<String> uploadFile(File image, String roomId,
-      [SettableMetadata? metadata]) async {
+      [SettableMetadata? metadata, bool profileImage = false]) async {
     Reference ref = _firebaseStorageRef
-        .child('chat-images')
+        .child(profileImage ? 'profiles' : 'chat-images')
         // ignore: unnecessary_string_escapes
         .child('$roomId\_${Timestamp.now().seconds.toString()}');
 
@@ -104,19 +108,17 @@ class DataBase {
   }
 
   Future<String> uploadStory(File image, [SettableMetadata? metadata]) async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
     Reference ref = _firebaseStorageRef
         .child('user-stories')
         // ignore: unnecessary_string_escapes
-        .child('$uid\_${Timestamp.now().seconds.toString()}');
+        .child('$_uid\_${Timestamp.now().seconds.toString()}');
 
     await ref.putFile(File(image.path), metadata).whenComplete(() => null);
     return ref.getDownloadURL();
   }
 
   Future<void> setStory(String storyUrl) async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    return _firebaseFirestore.collection('users').doc(uid).update({
+    return _firebaseFirestore.collection('users').doc(_uid).update({
       'story': storyUrl,
     });
   }
