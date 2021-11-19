@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../helpers/database_service.dart';
 import '../widgets/message.dart';
@@ -322,7 +323,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           MediaIcon(
             backgroundColor: Theme.of(context).colorScheme.primary,
             text: '',
-            onClick: () {},
+            onClick: () async {
+              String _url = 'tel:+91 555 010 999';
+              await canLaunch(_url)
+                  ? await launch(_url)
+                  : throw 'Could not launch $_url';
+            },
             padding: 5,
             icon: CupertinoIcons.video_camera_solid,
           ),
@@ -330,7 +336,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           MediaIcon(
             backgroundColor: Colors.green.shade400,
             text: '',
-            onClick: () {},
+            onClick: () async {
+              String _url = 'tel:+91 555 010 999';
+              await canLaunch(_url)
+                  ? await launch(_url)
+                  : throw 'Could not launch $_url';
+            },
             padding: 5,
             icon: CupertinoIcons.phone_solid,
           ),

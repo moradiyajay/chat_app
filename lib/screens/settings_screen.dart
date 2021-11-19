@@ -375,12 +375,14 @@ class _SettingScreenState extends State<SettingScreen> {
     } else if (_settings == Settings.Accounts) {
       _formKey.currentState!.save();
       await _user.updateDisplayName(_displayName);
-      String imageUrl =
-          await _db.uploadFile(_previewFile!, _user.uid, null, true);
-      setState(() {
-        _profileUrl = imageUrl;
-      });
-      _user.updatePhotoURL(_profileUrl);
+      if (_previewImageInitialize) {
+        String imageUrl =
+            await _db.uploadFile(_previewFile!, _user.uid, null, true);
+        setState(() {
+          _profileUrl = imageUrl;
+        });
+        _user.updatePhotoURL(_profileUrl);
+      }
       await _db.updateUserData({
         'username': _username,
         "displayName": _displayName,

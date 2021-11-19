@@ -25,6 +25,7 @@ exports.onMessageSend = functions.firestore.document('/chatRooms/{roomId}/chats/
     return admin.firestore().collection('users').doc(receiveUserId).get().then(result => {
         const data  = result.data();
         const tokenId = data.notificationId;
+        if (!data.showNotifications) return;
         
         const notificationContent = {
             notification: {

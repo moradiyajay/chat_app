@@ -85,20 +85,20 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green.shade400,
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(6),
-            child: const Text(
-              '1',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-            ),
-          ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: Colors.green.shade400,
+          //     shape: BoxShape.circle,
+          //   ),
+          //   padding: const EdgeInsets.all(6),
+          //   child: const Text(
+          //     '1',
+          //     style: TextStyle(
+          //       fontWeight: FontWeight.w500,
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
           Text(
             DateFormat('hh:mm aa').format(widget.dateTime),
             style: const TextStyle(
