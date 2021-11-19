@@ -1,16 +1,14 @@
-// ignore_for_file: prefer_const_constructors
-import 'package:chat_app/screens/search_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import './provider/firebase_service.dart';
 import './screens/chats_screen.dart';
 import './screens/home_screen.dart';
 import './screens/start_screen.dart';
 import './screens/auth_screen.dart';
+import './screens/search_screen.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
@@ -43,7 +41,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           ),
         ));
   }
-  print('A bg message just showed up :  ${message.messageId}');
 }
 
 void main() async {
@@ -63,18 +60,18 @@ void main() async {
     sound: true,
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  final Color primaryColor = Color.fromRGBO(108, 99, 255, 1);
+  final Color primaryColor = const Color.fromRGBO(108, 99, 255, 1);
 
   @override
   void initState() {
@@ -100,7 +97,6 @@ class _MyAppState extends State<MyApp> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
@@ -133,7 +129,7 @@ class _MyAppState extends State<MyApp> {
               primary: primaryColor,
               secondary: Colors.blueGrey.shade900,
               onSecondary: Colors.white,
-              background: Color.fromRGBO(244, 241, 253, 1),
+              background: const Color.fromRGBO(244, 241, 253, 1),
             ),
         textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
@@ -151,20 +147,22 @@ class _MyAppState extends State<MyApp> {
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
                 if (snapshot.hasData) {
-                  return HomeScreen();
+                  return Builder(builder: (context) {
+                    return const HomeScreen();
+                  });
                 } else {
-                  return StartScreen();
+                  return const StartScreen();
                 }
               },
             ),
-        ChatsScreen.routeName: (ctx) => ChatsScreen(),
-        AuthScreen.routeName: (ctx) => AuthScreen(),
-        SearchScreen.routeName: (ctx) => SearchScreen(),
+        ChatsScreen.routeName: (ctx) => const ChatsScreen(),
+        AuthScreen.routeName: (ctx) => const AuthScreen(),
+        SearchScreen.routeName: (ctx) => const SearchScreen(),
       },
     );
   }

@@ -8,7 +8,7 @@ import '../helpers/database_service.dart';
 
 class FirebaseServiceProvider {
   bool _isNewUser = true;
-  String _userName = '';
+  String _username = '';
   String _userEmail = '';
   String _userPassword = '';
 
@@ -21,7 +21,7 @@ class FirebaseServiceProvider {
   }
 
   set userName(String userName) {
-    _userName = userName;
+    _username = userName;
   }
 
   set userEmail(String userEmail) {
@@ -48,7 +48,7 @@ class FirebaseServiceProvider {
         idToken: googleSignInAuthentication.idToken,
       );
       await _auth.signInWithCredential(credential);
-      _userName = user!.email!.replaceAll('@gmail.com', '');
+      _username = user!.email!.replaceAll('@gmail.com', '');
       _userEmail = user!.email!;
 
       await DataBase().addUserToFirebase(user!.uid, {
@@ -58,7 +58,7 @@ class FirebaseServiceProvider {
             'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
         "story": null,
-        "username": user!.email!.replaceAll('@gmail.com', ''),
+        "username": _username,
       });
       // notifyListeners();
     } on FirebaseAuthException {
@@ -83,7 +83,7 @@ class FirebaseServiceProvider {
 
         // notifyListeners();
       }
-      userName = user!.email!.replaceAll('@gmail.com', '');
+      _username = user!.email!.replaceAll('@gmail.com', '');
 
       await DataBase().addUserToFirebase(user!.uid, {
         "displayName": user!.displayName,
@@ -92,7 +92,7 @@ class FirebaseServiceProvider {
             'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
         "userID": user!.uid,
         "story": null,
-        "username": user!.email!.replaceAll('@gmail.com', ''),
+        "username": _username,
       });
     } on FirebaseAuthException catch (error) {
       switch (error.code) {

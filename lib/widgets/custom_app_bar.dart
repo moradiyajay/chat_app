@@ -1,8 +1,8 @@
-import 'package:chat_app/components/round_icon.dart';
-import 'package:chat_app/screens/chats_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import 'package:chat_app/components/round_icon.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({

@@ -29,7 +29,6 @@ class _StoryScreenState extends State<StoryScreen> {
   late File _previewFile;
   bool _imageSelected = false;
   bool _uploading = false;
-  late String _previewFileName = '';
 
   _selectImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -75,8 +74,6 @@ class _StoryScreenState extends State<StoryScreen> {
     if (imageFile == null) return;
     setState(() {
       _previewFile = File(imageFile.path);
-      var _splitPath = _previewFile.path.split('/');
-      _previewFileName = _splitPath[_splitPath.length - 1];
       _imageSelected = true;
     });
   }

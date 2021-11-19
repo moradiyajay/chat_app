@@ -1,16 +1,15 @@
-import 'package:chat_app/components/or_divider.dart';
-import 'package:chat_app/components/social_icon.dart';
-import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:chat_app/screens/chats_screen.dart';
 import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:chat_app/widgets/rectangle_input_field.dart';
 import 'package:chat_app/widgets/rectangle_password_field.dart';
 import 'package:chat_app/provider/firebase_service.dart';
+import 'package:chat_app/components/or_divider.dart';
+import 'package:chat_app/components/social_icon.dart';
+import 'package:chat_app/screens/home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   static String routeName = '/auth-screen';
@@ -270,7 +269,7 @@ class _AuthScreenState extends State<AuthScreen>
                   ),
                   if (!_isNewUser) ...[
                     SizedBox(height: size.height * 0.01),
-                    OrDivider(),
+                    const OrDivider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

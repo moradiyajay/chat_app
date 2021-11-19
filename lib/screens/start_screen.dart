@@ -1,12 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:chat_app/screens/log_in_screen.dart';
-import 'package:chat_app/widgets/rectangle_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'auth_screen.dart';
+import 'package:chat_app/widgets/rectangle_button.dart';
 
 class StartScreen extends StatelessWidget {
   static String routename = '/start';
@@ -20,7 +17,7 @@ class StartScreen extends StatelessWidget {
             newUser: newUser,
           );
         },
-        transitionDuration: Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 400),
         transitionsBuilder: (__, Animation<double> animation,
             Animation<double> animationReverse, Widget child) {
           // first exit current page and then enter new page
@@ -65,7 +62,7 @@ class StartScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Chat App',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
@@ -74,13 +71,13 @@ class StartScreen extends StatelessWidget {
                       'images/chat.svg',
                       height: size.height * 0.5,
                     ),
-                    Text(
+                    const Text(
                       'Welcome To Chat App',
                       style:
                           TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 15),
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       'It\'s free and secure \nwith End-To-End encryption',
                       style: TextStyle(
                         fontSize: 15,

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../components/media_icon.dart';
 import '../helpers/database_service.dart';
@@ -12,7 +13,7 @@ import '../provider/firebase_service.dart';
 import '../widgets/rectangle_button.dart';
 import '../widgets/rectangle_input_field.dart';
 
-enum Settings { Home, Accounts, Notifications, Report, Help }
+enum Settings { home, accounts, notifications, report, help }
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  Settings _settings = Settings.Home;
+  Settings _settings = Settings.home;
   final FirebaseServiceProvider _firebaseServiceProvider =
       FirebaseServiceProvider();
   bool loading = false;
@@ -38,13 +39,13 @@ class _SettingScreenState extends State<SettingScreen> {
 
   String enumToString(Settings settings) {
     switch (settings) {
-      case Settings.Accounts:
+      case Settings.accounts:
         return "Accounts Settings";
-      case Settings.Notifications:
+      case Settings.notifications:
         return "Notifications";
-      case Settings.Report:
+      case Settings.report:
         return "Report a Problem";
-      case Settings.Help:
+      case Settings.help:
         return "Help & Support";
       default:
         return "Settings";
@@ -72,28 +73,28 @@ class _SettingScreenState extends State<SettingScreen> {
       SettingsOption(
           onTap: () {
             setState(() {
-              _settings = Settings.Accounts;
+              _settings = Settings.accounts;
             });
           },
           text: 'Account Settings'),
       SettingsOption(
           onTap: () {
             setState(() {
-              _settings = Settings.Notifications;
+              _settings = Settings.notifications;
             });
           },
           text: 'Notifications'),
       SettingsOption(
           onTap: () {
             setState(() {
-              _settings = Settings.Report;
+              _settings = Settings.report;
             });
           },
           text: 'Report a Problem'),
       SettingsOption(
           onTap: () {
             setState(() {
-              _settings = Settings.Help;
+              _settings = Settings.help;
             });
           },
           text: 'Help & Support'),
@@ -166,11 +167,17 @@ class _SettingScreenState extends State<SettingScreen> {
     var reportSettings = [
       const SizedBox(height: 10),
       const Text('Visit:'),
-      Text(
-        'https://github.com/juniorbomb/chat_app/issues',
-        style: TextStyle(
-          decoration: TextDecoration.underline,
-          color: Colors.blue.shade600,
+      GestureDetector(
+        onTap: () async {
+          String _url = 'https://github.com/juniorbomb/chat_app/issues';
+          await canLaunch(_url) ? launch(_url) : throw 'Could not launch $_url';
+        },
+        child: Text(
+          'https://github.com/juniorbomb/chat_app/issues',
+          style: TextStyle(
+            decoration: TextDecoration.underline,
+            color: Colors.blue.shade600,
+          ),
         ),
       ),
     ];
@@ -178,23 +185,29 @@ class _SettingScreenState extends State<SettingScreen> {
     var helpSettings = [
       const SizedBox(height: 10),
       const Text('Visit:'),
-      Text(
-        'https://github.com/juniorbomb/chat_app',
-        style: TextStyle(
-          decoration: TextDecoration.underline,
-          color: Colors.blue.shade600,
+      GestureDetector(
+        onTap: () async {
+          String _url = 'https://github.com/juniorbomb/chat_app';
+          await canLaunch(_url) ? launch(_url) : throw 'Could not launch $_url';
+        },
+        child: Text(
+          'https://github.com/juniorbomb/chat_app',
+          style: TextStyle(
+            decoration: TextDecoration.underline,
+            color: Colors.blue.shade600,
+          ),
         ),
       ),
     ];
 
     switch (_settings) {
-      case Settings.Accounts:
+      case Settings.accounts:
         return accountSettings;
-      case Settings.Notifications:
+      case Settings.notifications:
         return notificationSettings;
-      case Settings.Report:
+      case Settings.report:
         return reportSettings;
-      case Settings.Help:
+      case Settings.help:
         return helpSettings;
       default:
         return homeSettings;
@@ -269,18 +282,18 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           SizedBox(
               height: 35,
-              child: _settings == Settings.Home
+              child: _settings == Settings.home
                   ? null
                   : IconButton(
                       onPressed: () {
                         setState(() {
-                          _settings = Settings.Home;
+                          _settings = Settings.home;
                         });
                       },
                       icon: const Icon(Icons.arrow_back))),
           Center(
             child: GestureDetector(
-              onTap: _settings == Settings.Accounts ? _imagePicker : null,
+              onTap: _settings == Settings.accounts ? _imagePicker : null,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: Stack(
@@ -289,7 +302,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       backgroundImage: profileImageProvider(),
                       radius: 30,
                     ),
-                    if (_settings == Settings.Accounts)
+                    if (_settings == Settings.accounts)
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -344,16 +357,16 @@ class _SettingScreenState extends State<SettingScreen> {
                 const SizedBox(height: 12),
                 ...currentSettings(),
                 const Spacer(),
-                if (_settings != Settings.Help && _settings != Settings.Report)
+                if (_settings != Settings.help && _settings != Settings.report)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: loading
                         ? const Center(child: CircularProgressIndicator())
                         : RectangleButton(
                             text:
-                                _settings == Settings.Home ? 'Log Out' : 'Save',
+                                _settings == Settings.home ? 'Log Out' : 'Save',
                             callback: save,
-                            backgroundColor: _settings == Settings.Home
+                            backgroundColor: _settings == Settings.home
                                 ? Theme.of(context).primaryColor
                                 : Theme.of(context).colorScheme.secondary,
                           ),
@@ -370,9 +383,9 @@ class _SettingScreenState extends State<SettingScreen> {
     setState(() {
       loading = true;
     });
-    if (_settings == Settings.Home) {
+    if (_settings == Settings.home) {
       FirebaseServiceProvider().logOut();
-    } else if (_settings == Settings.Accounts) {
+    } else if (_settings == Settings.accounts) {
       _formKey.currentState!.save();
       await _user.updateDisplayName(_displayName);
       if (_previewImageInitialize) {
@@ -388,7 +401,7 @@ class _SettingScreenState extends State<SettingScreen> {
         "displayName": _displayName,
         "profileURL": _profileUrl,
       });
-    } else if (_settings == Settings.Notifications) {
+    } else if (_settings == Settings.notifications) {
       await _db.updateUserData({
         'showNotifications': _showNotifications,
       });

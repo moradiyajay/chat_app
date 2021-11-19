@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:chat_app/components/round_icon.dart';
-
 class MessageInputField extends StatelessWidget {
   final Function onSendClick;
   final VoidCallback onAddClick;

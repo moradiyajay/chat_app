@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:chat_app/helpers/database_service.dart';
 import 'package:chat_app/screens/chat_room_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:intl/intl.dart';
 
+// ignore: must_be_immutable
 class SendMessage extends StatelessWidget {
   MessageType messageType;
   Function onTap;
@@ -35,33 +34,33 @@ class SendMessage extends StatelessWidget {
     String fileUrl = ds['fileUrl'];
     DateTime dateTime = ts.toDate();
     EdgeInsets padding =
-        messageType == MessageType.Image || messageType == MessageType.Document
+        messageType == MessageType.image || messageType == MessageType.document
             ? const EdgeInsets.symmetric(horizontal: 5, vertical: 5)
             : const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
 
     Widget messageLayout() {
       switch (messageType) {
-        case MessageType.Text:
+        case MessageType.text:
           return TextMessage(
             message: message,
             textColor: isMe ? Colors.white : Colors.black,
             dateTime: dateTime,
           );
-        case MessageType.Image:
+        case MessageType.image:
           return ImageMessage(
             imageUrl: fileUrl,
             message: message,
             textColor: isMe ? Colors.white : Colors.black,
             dateTime: dateTime,
           );
-        case MessageType.Document:
+        case MessageType.document:
           return DocumentMessage(
             message: message,
             fileUrl: fileUrl,
             textColor: isMe ? Colors.white : Colors.black,
             dateTime: dateTime,
           );
-        case MessageType.Location:
+        case MessageType.location:
           return LocationMessage(
             message: message,
             textColor: isMe ? Colors.white : Colors.black,

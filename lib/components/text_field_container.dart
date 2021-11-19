@@ -1,11 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables
-
 import 'package:flutter/material.dart';
 
 class TextFieldContiner extends StatelessWidget {
   final Widget child;
   final Color primaryColor;
-  TextFieldContiner({
+  const TextFieldContiner({
     Key? key,
     required this.child,
     required this.primaryColor,

@@ -1,10 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, curly_braces_in_flow_control_structures
-
 import 'dart:ui';
 
-import 'package:chat_app/components/round_icon.dart';
-import 'package:chat_app/screens/search_screen.dart';
-import 'package:chat_app/screens/story_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,8 +12,10 @@ import '../provider/firebase_service.dart';
 import 'chat_room_screen.dart';
 import 'start_screen.dart';
 import '../widgets/chat_room_list_tile.dart';
-import '../widgets/search_list_tile.dart';
 import '../widgets/story_tile.dart';
+import '../components/round_icon.dart';
+import '../screens/search_screen.dart';
+import '../screens/story_screen.dart';
 
 class ChatsScreen extends StatefulWidget {
   static String routeName = '/chats';
@@ -69,8 +66,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
       stream: storyStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Container(
+            alignment: Alignment.center,
+            height: 122,
+            margin: const EdgeInsets.only(top: 10, bottom: 25),
+            child: const CircularProgressIndicator(),
           );
         }
         List<DocumentSnapshot> docs = snapshot.data!.docs;
@@ -84,11 +84,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
               (user) => user['story'] == null && user.id != _user!.uid);
         }
         return Container(
-          margin: EdgeInsets.only(top: 10, bottom: 25),
+          margin: const EdgeInsets.only(top: 10, bottom: 25),
           height: 122,
           child: ListView.builder(
             shrinkWrap: false,
-            padding: EdgeInsets.only(left: 20, right: 10),
+            padding: const EdgeInsets.only(left: 20, right: 10),
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return StoryTile(
@@ -139,11 +139,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
       stream: chatRoomStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Container(
+            height: 200,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
-                ? Center(child: Text('Start Chating'))
+                ? const Center(child: Text('Start Chating'))
                 : Column(
                     children: [
                       ..._getList(snapshot.data!.docs),
@@ -158,10 +162,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
     int hour = DateTime.now().hour;
     if (hour < 12) {
       return "Good Mornig";
-    } else if (hour >= 12 && hour < 18)
+    } else if (hour >= 12 && hour < 18) {
       return " Good Afternoon";
-    else
+    } else {
       return " Good Evening";
+    }
   }
 
   logOut(FirebaseServiceProvider firebaseServiceProvider) async {
@@ -175,7 +180,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (ctx, _, __) => StartScreen(),
+        pageBuilder: (ctx, _, __) => const StartScreen(),
       ),
     );
   }
@@ -209,20 +214,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
           elevation: 0,
           flexibleSpace: FlexibleSpaceBar(
             title: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(30),
                 ),
               ),
-              padding:
-                  EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+              padding: const EdgeInsets.only(
+                  left: 24, right: 24, top: 20, bottom: 10),
               child: Row(
                 textBaseline: TextBaseline.alphabetic,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 children: [
-                  Text(
+                  const Text(
                     'Chats',
                     style: TextStyle(
                       color: Colors.black87,
@@ -232,7 +237,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                   GestureDetector(
                     onTap: () {},
-                    child: Text(
+                    child: const Text(
                       'Manage',
                       style: TextStyle(
                         fontSize: 13,
@@ -247,7 +252,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
             titlePadding: EdgeInsets.zero,
             background: Column(
               children: [
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ListTile(
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(
@@ -267,7 +272,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       _user!.displayName ?? 'Alexie Blender', // !
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -285,7 +290,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           onClick: () {
                             Navigator.of(context).push(
                               PageRouteBuilder(pageBuilder: (context, _, __) {
-                                return SearchScreen();
+                                return const SearchScreen();
                               }, transitionsBuilder: (context,
                                   Animation<double> animation, _, child) {
                                 return FadeTransition(
@@ -298,13 +303,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             setState(() {
                               isSearchOn = !isSearchOn;
                             });
-                          }, //!
+                          },
                           backgroundColor: Theme.of(context).primaryColor,
                         ),
                       ),
                       RoundIconButton(
                         icon: Icons.add,
-                        onClick: () {}, //!
+                        onClick: () {}, // only for show
                         backgroundColor:
                             Theme.of(context).colorScheme.secondary,
                       ),

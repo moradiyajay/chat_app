@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors_in_immutables
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -7,7 +5,7 @@ class SocialIcon extends StatelessWidget {
   final String assetName;
   final VoidCallback callback;
 
-  SocialIcon({required this.assetName, Key? key, required this.callback})
+  const SocialIcon({required this.assetName, Key? key, required this.callback})
       : super(key: key);
 
   @override

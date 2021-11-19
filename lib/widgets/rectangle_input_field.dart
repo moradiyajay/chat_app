@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables
-
 import 'package:chat_app/components/text_field_container.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +9,7 @@ class RectangleInputField extends StatelessWidget {
   final Function onSaved;
   final TextInputAction textInputAction;
 
-  RectangleInputField({
+  const RectangleInputField({
     Key? key,
     required this.hintText,
     required this.primaryColor,

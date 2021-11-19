@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:ui';
 
 import 'package:chat_app/components/or_divider.dart';
@@ -69,7 +67,7 @@ class _LogInScreenState extends State<LogInScreen> {
           Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
-                pageBuilder: (ctx, _, __) => ChatsScreen(),
+                pageBuilder: (ctx, _, __) => const ChatsScreen(),
               ),
               (route) => false);
         }
@@ -93,7 +91,7 @@ class _LogInScreenState extends State<LogInScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             PageRouteBuilder(
-              pageBuilder: (ctx, _, __) => ChatsScreen(),
+              pageBuilder: (ctx, _, __) => const ChatsScreen(),
             ),
             (route) => false,
           );
@@ -133,13 +131,13 @@ class _LogInScreenState extends State<LogInScreen> {
                     children: [
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: Icon(Icons.arrow_back_rounded),
+                        child: const Icon(Icons.arrow_back_rounded),
                       ),
                       Container(
                         width: size.width,
                         height: 24,
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           'Login',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
@@ -169,10 +167,10 @@ class _LogInScreenState extends State<LogInScreen> {
                   ),
                   Container(
                     alignment: Alignment.centerRight,
-                    margin: EdgeInsets.symmetric(vertical: 12),
+                    margin: const EdgeInsets.symmetric(vertical: 12),
                     child: GestureDetector(
                       onTap: () {},
-                      child: Text(
+                      child: const Text(
                         'Forget Password?',
                         style: TextStyle(
                           color: Colors.black54,
@@ -182,7 +180,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     ),
                   ),
                   isLogingIn
-                      ? CircularProgressIndicator()
+                      ? const CircularProgressIndicator()
                       : RectangleButton(
                           text: "Log In",
                           backgroundColor: Theme.of(context).primaryColor,
@@ -190,7 +188,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                   SizedBox(height: size.height * 0.03),
                   GestureDetector(
-                    onTap: () => navigatTo(context, AuthScreen()),
+                    onTap: () => navigatTo(context, const AuthScreen()),
                     child: Text(
                       'Don\'t have an account? Register',
                       style: TextStyle(
@@ -200,7 +198,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     ),
                   ),
                   SizedBox(height: size.height * 0.01),
-                  OrDivider(),
+                  const OrDivider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

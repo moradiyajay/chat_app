@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -17,11 +16,11 @@ import '../components/media_icon.dart';
 import '../widgets/message_input_field.dart';
 
 enum MessageType {
-  Text,
-  Image,
-  Document,
-  Contact,
-  Location,
+  text,
+  image,
+  document,
+  contact,
+  location,
 }
 
 class ChatRoomScreen extends StatefulWidget {
@@ -44,7 +43,7 @@ class ChatRoomScreen extends StatefulWidget {
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   String _chatRoomId = "";
-  MessageType _messageType = MessageType.Text;
+  MessageType _messageType = MessageType.text;
   late File _previewFile;
   late String _uploadedFileUrl = '';
   late String _previewFileName = '';
@@ -73,7 +72,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       _previewFileName = '';
       _uploadedFileUrl = '';
       _previewFile.delete();
-      _messageType = MessageType.Text;
+      _messageType = MessageType.text;
     });
   }
 
@@ -96,6 +95,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     return StreamBuilder<QuerySnapshot>(
       stream: _messageStream as Stream<QuerySnapshot>,
       builder: (context, snapshots) {
+        if (snapshots.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
         return snapshots.hasData
             ? ListView.builder(
                 padding: EdgeInsets.only(bottom: _isSelecting ? 210 : 100),
@@ -118,7 +120,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   }
 
   _sendMessage(String sendMessage) async {
-    if (sendMessage.isEmpty && _messageType == MessageType.Text) return;
+    if (sendMessage.isEmpty && _messageType == MessageType.text) return;
     FocusScope.of(context).unfocus();
     String message = sendMessage;
     MessageType tmpMessageType = _messageType;
@@ -126,11 +128,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     controller.clear();
     var timeStamp = Timestamp.now();
 
-    if (tmpMessageType == MessageType.Image ||
-        tmpMessageType == MessageType.Document) {
+    if (tmpMessageType == MessageType.image ||
+        tmpMessageType == MessageType.document) {
       try {
         setState(() {
-          _messageType = MessageType.Text;
+          _messageType = MessageType.text;
         });
         // ! set metadata for more info
         String imageUrl = await DataBase().uploadFile(
@@ -177,7 +179,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       };
       await DataBase().updateLastMessgae(_chatRoomId, lastMessageInfo);
       setState(() {
-        _messageType = MessageType.Text;
+        _messageType = MessageType.text;
         _previewFileName = '';
         if (_uploadedFileUrl != '') {
           _previewFile.delete();
@@ -240,7 +242,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
       var _splitPath = _previewFile.path.split('/');
       _previewFileName = _splitPath[_splitPath.length - 1];
-      _messageType = MessageType.Image;
+      _messageType = MessageType.image;
     });
   }
 
@@ -254,7 +256,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     var _splitPath = path!.split('/');
     _previewFileName = _splitPath[_splitPath.length - 1];
     setState(() {
-      _messageType = MessageType.Document;
+      _messageType = MessageType.document;
     });
   }
 
@@ -279,10 +281,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    _messageType = MessageType.Location;
+    _messageType = MessageType.location;
     controller.text =
         'http://maps.google.com/maps?z=12&t=m&q=loc:${position.latitude}+${position.longitude}';
   }
+
+  onMicClick() {}
 
   @override
   Widget build(BuildContext context) {
@@ -352,11 +356,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       body: Stack(
         children: [
           Container(
-            color: _messageType == MessageType.Image
+            color: _messageType == MessageType.image
                 ? Colors.black
                 : Theme.of(context).colorScheme.background.withOpacity(0.5),
             width: double.infinity,
-            child: _messageType == MessageType.Image
+            child: _messageType == MessageType.image
                 // Todo chage image preview to all file preview
                 ? Container(
                     constraints: BoxConstraints(
@@ -394,7 +398,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Document Preview
-                  if (_messageType == MessageType.Document)
+                  if (_messageType == MessageType.document)
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
@@ -446,7 +450,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                           backgroundColor:
                               Theme.of(context).colorScheme.secondary,
                           text: '',
-                          onClick: () {},
+                          onClick: onMicClick,
                           icon: Icons.mic_none_outlined,
                         ),
                         MessageInputField(
@@ -495,7 +499,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               ),
             ),
           ),
-          if (_messageType == MessageType.Image)
+          if (_messageType == MessageType.image)
             Positioned(
               top: 8,
               right: 8,

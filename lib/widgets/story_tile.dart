@@ -86,3 +86,59 @@ class StoryTile extends StatelessWidget {
     );
   }
 }
+
+class StoryTileShimmer extends StatelessWidget {
+  final Color color;
+  const StoryTileShimmer({
+    Key? key,
+    required this.color,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: 110,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [
+                    Colors.yellow.shade600,
+                    Colors.orange.shade400,
+                    Colors.red.shade400
+                  ]),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: color,
+                  ),
+                  child: CircleAvatar(
+                    minRadius: 28,
+                    backgroundColor: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Container(
+            width: double.infinity,
+            color: color,
+          )
+        ],
+      ),
+    );
+  }
+}

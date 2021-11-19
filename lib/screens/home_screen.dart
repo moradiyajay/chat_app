@@ -1,12 +1,10 @@
-import 'package:chat_app/helpers/database_service.dart';
-import 'package:chat_app/provider/firebase_service.dart';
-import 'package:chat_app/screens/settings_screen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import './chats_screen.dart';
+import 'package:chat_app/helpers/database_service.dart';
+import 'package:chat_app/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = '/home';
@@ -36,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           key: ValueKey('chats_screen'),
         );
       case 1:
-        return SettingScreen();
+        return const SettingScreen();
       default:
     }
   }
@@ -125,6 +123,7 @@ class NavigationBar extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class NavigationBarItem extends StatelessWidget {
   final String label;
   final IconData icon;

@@ -11,7 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class SearchScreen extends StatefulWidget {
   static String routeName = '/search';
 
-  SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -65,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
-                ? Center(child: Text('No User Found'))
+                ? const Center(child: Text('No User Found'))
                 : ListView.builder(
                     shrinkWrap: true,
                     // reverse: true,

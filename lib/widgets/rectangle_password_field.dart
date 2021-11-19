@@ -1,8 +1,7 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables
-
 import 'package:chat_app/components/text_field_container.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class RectanglePasswordField extends StatefulWidget {
   final String hintText;
   final Color secondaryColor;
