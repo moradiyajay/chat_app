@@ -28,6 +28,7 @@ class RectangleInputField extends StatelessWidget {
         enableSuggestions: false,
         cursorColor: secondaryColor,
         textCapitalization: TextCapitalization.none,
+        keyboardType: TextInputType.emailAddress,
         onSaved: (value) => onSaved(value),
         style: TextStyle(color: secondaryColor),
         textInputAction: textInputAction,

@@ -26,22 +26,23 @@ class _AuthScreenState extends State<AuthScreen>
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   late bool _isNewUser;
-  final TextEditingController _pass = TextEditingController();
+  TextEditingController? _pass;
   late FirebaseServiceProvider _firebaseServiceProvider;
   late AnimationController _animationController;
   late Animation<double> _conPassAnimation;
-  late Animation<double> _conPassSizeAnimation;
   late Animation<Offset> _forgetPassAnimation;
 
   void toggleAuth(BuildContext context) {
     if (_isNewUser) {
       _animationController.forward();
+      _pass = null;
       setState(() {
         _isNewUser = false;
         _firebaseServiceProvider.isNewUser = _isNewUser;
       });
     } else {
       _animationController.reverse();
+      _pass = TextEditingController();
       setState(() {
         _isNewUser = true;
         _firebaseServiceProvider.isNewUser = _isNewUser;
@@ -107,6 +108,9 @@ class _AuthScreenState extends State<AuthScreen>
     _isNewUser = widget.newUser;
     _firebaseServiceProvider = FirebaseServiceProvider();
     _firebaseServiceProvider.isNewUser = _isNewUser;
+    if (_isNewUser) {
+      _pass = TextEditingController();
+    }
 
     _animationController = AnimationController(
       vsync: this,
@@ -117,11 +121,6 @@ class _AuthScreenState extends State<AuthScreen>
         CurvedAnimation(
             parent: _animationController,
             curve: const Interval(0, 0.5, curve: Curves.easeInOutCubic)));
-
-    _conPassSizeAnimation = Tween<double>(begin: 78, end: 0).animate(
-        CurvedAnimation(
-            parent: _animationController,
-            curve: const Interval(0.5, 1, curve: Curves.fastOutSlowIn)));
 
     _forgetPassAnimation = Tween<Offset>(
             begin: const Offset(1, 0), end: Offset.zero)
@@ -138,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   void dispose() {
     super.dispose();
-    _pass.dispose();
+    _pass!.dispose();
     _animationController.dispose();
   }
 
@@ -196,7 +195,7 @@ class _AuthScreenState extends State<AuthScreen>
                     textInputAction: _isNewUser
                         ? TextInputAction.next
                         : TextInputAction.done,
-                    onSaved: (value) {
+                    onSaved: (String value) {
                       if (!_isNewUser) {
                         _firebaseServiceProvider.userPassword = value;
                       }
@@ -211,10 +210,7 @@ class _AuthScreenState extends State<AuthScreen>
                             offset: Offset(_conPassAnimation.value, 0),
                             child: Opacity(
                               opacity: _isNewUser ? 1 : 0,
-                              child: SizedBox(
-                                height: _conPassSizeAnimation.value,
-                                child: child,
-                              ),
+                              child: child,
                             ),
                           );
                         },

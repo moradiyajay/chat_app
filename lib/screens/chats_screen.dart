@@ -6,6 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 import '../helpers/database_service.dart';
 import '../provider/firebase_service.dart';
@@ -34,6 +37,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool isLogingOut = false;
   bool isSearchOn = false;
   bool isSearching = false;
+  bool showManageTools = false;
   TextEditingController searchController = TextEditingController();
 
   void listTileClick({
@@ -123,20 +127,25 @@ class _ChatsScreenState extends State<ChatsScreen> {
     List<Widget> _getList(List<DocumentSnapshot> docs) {
       List<Widget> list = [];
       for (var doc in docs) {
-        list.add(ChatRoomListTile(
-          lastMessage: doc['lastMessage'],
-          chatRoomId: doc.id,
-          dateTime: (doc['lastTs'] as Timestamp).toDate(),
-          myUid: myUid,
-          onClick: listTileClick,
-          key: ValueKey(doc.id),
-        ));
+        list.add(
+          GestureDetector(
+            onLongPress: onManageClick,
+            child: ChatRoomListTile(
+              lastMessage: doc['lastMessage'],
+              chatRoomId: doc.id,
+              dateTime: (doc['lastTs'] as Timestamp).toDate(),
+              myUid: myUid,
+              onClick: listTileClick,
+              key: ValueKey(doc.id),
+            ),
+          ),
+        );
       }
       return list;
     }
 
     return StreamBuilder(
-      stream: chatRoomStream,
+      stream: DataBase().getChatRooms(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -147,7 +156,35 @@ class _ChatsScreenState extends State<ChatsScreen> {
         }
         return snapshot.hasData
             ? snapshot.data!.docs.isEmpty
-                ? const Center(child: Text('Start Chating'))
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        const Text(
+                          'No Disscution yet...',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        const Text(
+                          'Send message to your friends',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        SvgPicture.asset(
+                          'images/begin_chat.svg',
+                          width: 200,
+                        ),
+                      ],
+                    ),
+                  )
                 : Column(
                     children: [
                       ..._getList(snapshot.data!.docs),
@@ -183,6 +220,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
         pageBuilder: (ctx, _, __) => const StartScreen(),
       ),
     );
+  }
+
+  onManageClick() {
+    setState(() {
+      showManageTools = !showManageTools;
+    });
   }
 
   @override
@@ -236,7 +279,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: onManageClick,
                     child: const Text(
                       'Manage',
                       style: TextStyle(
@@ -257,7 +300,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(
                       _user!.photoURL ??
-                          'https://data.whicdn.com/images/322027365/original.jpg?t=1541703413', //!
+                          'https://ui-avatars.com/api/?name=chat+app&background=random&rounded=true&size=128&format=png',
                     ),
                   ),
                   title: Text(
@@ -271,7 +314,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      _user!.displayName ?? 'Alexie Blender', // !
+                      _user!.displayName ?? 'user',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -309,7 +352,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                       ),
                       RoundIconButton(
                         icon: Icons.add,
-                        onClick: () {}, // only for show
+                        onClick: () async {
+                          await FirebaseServiceProvider().logOut();
+                        }, // only for show
                         backgroundColor:
                             Theme.of(context).colorScheme.secondary,
                       ),
@@ -324,6 +369,61 @@ class _ChatsScreenState extends State<ChatsScreen> {
         SliverList(
           delegate: SliverChildListDelegate.fixed(
             [
+              if (showManageTools)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          width: 100,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white,
+                                Theme.of(context).primaryColor.withOpacity(0.1)
+                              ],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 16,
+                          ),
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Today ${DateFormat('h:mm aa').format(DateTime.now())} ',
+                            style: const TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      RoundIconButton(
+                        icon: Icons.push_pin,
+                        onClick: () {},
+                        backgroundColor: Colors.green.shade400,
+                      ),
+                      RoundIconButton(
+                        icon: Icons.volume_off_sharp,
+                        onClick: () {},
+                        backgroundColor:
+                            Theme.of(context).primaryColor.withOpacity(0.7),
+                      ),
+                      RoundIconButton(
+                        icon: CupertinoIcons.delete_solid,
+                        onClick: () {},
+                        backgroundColor: Colors.red.shade400,
+                      ),
+                    ],
+                  ),
+                ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 color: Colors.white,

@@ -47,9 +47,7 @@ class StoryTile extends StatelessWidget {
                     ),
                     child: CircleAvatar(
                       minRadius: 28,
-                      backgroundImage: NetworkImage(
-                        profileUrl,
-                      ),
+                      backgroundImage: NetworkImage(profileUrl),
                     ),
                   ),
                 ),
@@ -109,7 +107,7 @@ class StoryTileShimmer extends StatelessWidget {
           Stack(
             children: [
               Container(
-                padding: EdgeInsets.all(2),
+                padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(colors: [

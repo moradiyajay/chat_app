@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app/screens/start_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -384,7 +385,9 @@ class _SettingScreenState extends State<SettingScreen> {
       loading = true;
     });
     if (_settings == Settings.home) {
-      FirebaseServiceProvider().logOut();
+      await FirebaseServiceProvider().logOut();
+      Navigator.pushReplacement(context,
+          PageRouteBuilder(pageBuilder: (ctx, _, __) => const StartScreen()));
     } else if (_settings == Settings.accounts) {
       _formKey.currentState!.save();
       await _user.updateDisplayName(_displayName);

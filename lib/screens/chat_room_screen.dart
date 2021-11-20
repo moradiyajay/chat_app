@@ -234,7 +234,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     if (imageSource == null) return;
 
     final XFile? imageFile = await _picker.pickImage(
-        source: imageSource ?? ImageSource.camera, imageQuality: 50);
+        source: imageSource ?? ImageSource.camera, imageQuality: 25);
 
     if (imageFile == null) return;
     setState(() {

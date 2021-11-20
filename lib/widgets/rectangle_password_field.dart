@@ -41,11 +41,22 @@ class _RectanglePasswordFieldState extends State<RectanglePasswordField> {
         cursorColor: widget.secondaryColor,
         obscureText: secureText,
         textCapitalization: TextCapitalization.none,
+        keyboardType: TextInputType.visiblePassword,
         controller: widget.controller,
         style: TextStyle(color: widget.secondaryColor),
         textInputAction: widget.textInputAction,
-        onSaved: (value) => widget.onSaved(value),
+        onSaved: (value) {
+          if (widget.hintText == 'Confirm Password' &&
+              widget.confirmController == null) {
+            return;
+          }
+          widget.onSaved(value);
+        },
         validator: (value) {
+          if (widget.hintText == 'Confirm Password' &&
+              widget.confirmController == null) {
+            return null;
+          }
           if (value!.isEmpty || value.length < 8) {
             return 'Password must be at least 8 characters long.';
           } else if (widget.confirmController != null &&

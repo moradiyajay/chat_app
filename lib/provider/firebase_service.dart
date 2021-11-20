@@ -32,6 +32,9 @@ class FirebaseServiceProvider {
     _userPassword = userPassword;
   }
 
+  String get getUserEmail => _userEmail;
+  String get getUserPassword => _userPassword;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -55,11 +58,16 @@ class FirebaseServiceProvider {
         "displayName": user!.displayName,
         "email": user!.email,
         "profileURL": user!.photoURL ??
-            'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
+            'https://ui-avatars.com/api/?name=$_username&background=random&rounded=true&size=128&format=png',
         "userID": user!.uid,
         "story": null,
         "username": _username,
       });
+      if (user!.photoURL == null) {
+        await user!.updatePhotoURL(
+            "https://ui-avatars.com/api/?name=$_username&background=random&rounded=true&size=128&format=png");
+      }
+
       // notifyListeners();
     } on FirebaseAuthException {
       // notifyListeners();
@@ -83,17 +91,20 @@ class FirebaseServiceProvider {
 
         // notifyListeners();
       }
-      _username = user!.email!.replaceAll('@gmail.com', '');
+      _username = _userEmail.replaceAll('@gmail.com', '');
 
       await DataBase().addUserToFirebase(user!.uid, {
-        "displayName": user!.displayName,
-        "email": user!.email,
-        "profileURL": user!.photoURL ??
-            'https://avatars.dicebear.com/api/personas/${user!.uid}.svg',
+        "displayName": _username,
+        "email": _userEmail,
+        "profileURL":
+            'https://ui-avatars.com/api/?name=$_username&background=random&rounded=true&size=128&format=png',
         "userID": user!.uid,
         "story": null,
         "username": _username,
       });
+      await user!.updateDisplayName(_username);
+      await user!.updatePhotoURL(
+          "https://ui-avatars.com/api/?name=$_username&background=random&rounded=true&size=128&format=png");
     } on FirebaseAuthException catch (error) {
       switch (error.code) {
         case "ERROR_EMAIL_ALREADY_IN_USE":

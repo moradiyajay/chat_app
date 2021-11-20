@@ -134,10 +134,25 @@ class _SearchScreenState extends State<SearchScreen> {
                   textAlign: TextAlign.left,
                 ),
               !isSearching
-                  ? Expanded(
-                      child: SvgPicture.asset(
-                        'images/people_search.svg',
-                        width: size.width * 0.6,
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const Text(
+                            'Start new disscution ...',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SvgPicture.asset(
+                            'images/people_search.svg',
+                            width: size.width * 0.6,
+                          ),
+                        ],
                       ),
                     )
                   : searchUserList(),
