@@ -1,7 +1,8 @@
 # chat_app
 
-Chat App
-[Demo Video](https://youtu.be/oRJ5NDMHBPc)
+Flutter Chat App Demo<br/>
+[![Youtube thumbnail](http://img.youtube.com/vi/oRJ5NDMHBPc/0.jpg)](http://www.youtube.com/watch?v=oRJ5NDMHBPc "Flutter Chatting Application Demo | Firebase | Jay Moradiya")
+<!-- [Demo Video](https://youtu.be/oRJ5NDMHBPc) -->
 
 ## 📱 Screens :
 ✔ Splash Screen </br>
